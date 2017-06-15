@@ -1,0 +1,23 @@
+<html>
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+  <body>
+    <script>
+    function sendCreate(){
+      $.ajax({
+        method: "POST",
+        url: "http://localhost:8080/CreateGame",
+        data: '{"GameType":"test","NbPlayers":2,"PlayerIDS":[1,2]}'
+      });
+    }
+    </script>
+    Test interface Gogame
+    <br>
+    <div>
+      P1 : <input type=text name="p1"/>
+      P2 : <input type=text name="p2"/>
+      <button value="OK" onclick="sendCreate()">
+    </div>
+  </body>
+</html>
