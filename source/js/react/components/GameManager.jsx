@@ -2,7 +2,7 @@ import React                    from 'react';
 import ReactDOM                 from 'react-dom';
 
 
-class ConfigManager extends React.Component {
+class GameManager extends React.Component {
 
     constructor(props) {
         super(props);
@@ -22,11 +22,11 @@ class ConfigManager extends React.Component {
 
         return (
             <div>
-                config
+                Game
             </div>
         );
     }
 
 }
 
-export default (ConfigManager);
+export default (GameManager);

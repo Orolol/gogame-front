@@ -73,7 +73,7 @@
 
 	var _ModuleManager2 = _interopRequireDefault(_ModuleManager);
 
-	var _App = __webpack_require__(271);
+	var _App = __webpack_require__(272);
 
 	var _App2 = _interopRequireDefault(_App);
 
@@ -25513,19 +25513,27 @@
 
 	var _AccountManager2 = _interopRequireDefault(_AccountManager);
 
-	var _ConfigManager = __webpack_require__(231);
+	var _Chat = __webpack_require__(231);
 
-	var _ConfigManager2 = _interopRequireDefault(_ConfigManager);
+	var _Chat2 = _interopRequireDefault(_Chat);
 
-	var _HomeManager = __webpack_require__(232);
+	var _Socket = __webpack_require__(273);
+
+	var _Socket2 = _interopRequireDefault(_Socket);
+
+	var _PlayerBoard = __webpack_require__(274);
+
+	var _PlayerBoard2 = _interopRequireDefault(_PlayerBoard);
+
+	var _HomeManager = __webpack_require__(233);
 
 	var _HomeManager2 = _interopRequireDefault(_HomeManager);
 
 	var _reactDom = __webpack_require__(222);
 
-	var _reactRedux = __webpack_require__(233);
+	var _reactRedux = __webpack_require__(234);
 
-	var _redux = __webpack_require__(240);
+	var _redux = __webpack_require__(241);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -25543,6 +25551,11 @@
 
 	        var _this = _possibleConstructorReturn(this, (ModuleManager.__proto__ || Object.getPrototypeOf(ModuleManager)).call(this, props));
 
+	        _this.state = {
+	            newChatMsg: "",
+	            newGameState: ""
+	        };
+	        var conn;
 	        console.log('CONST DU MODULE MAN');
 	        return _this;
 	    }
@@ -25550,34 +25563,41 @@
 	    _createClass(ModuleManager, [{
 	        key: 'componentDidMount',
 	        value: function componentDidMount() {
+
+	            if (window["WebSocket"]) {
+	                this.conn = new WebSocket("ws://localhost:5000/ws");
+	                this.conn.onclose = function (evt) {
+	                    item = "Connection closed.";
+	                    this.setState({ newChatMsg: item });
+	                    // appendLog(item);
+	                }.bind(this);
+	                this.conn.onmessage = function (evt) {
+	                    var messages = evt.data.split('\n');
+	                    for (var i = 0; i < messages.length; i++) {
+	                        // var obj = JSON.parse( item );
+	                        console.log(messages[i]);
+	                        this.setState({ newGameState: messages[i] });
+
+	                        // appendLog(item);
+	                    }
+	                }.bind(this);
+	            } else {
+	                var item = document.createElement("div");
+	                item.innerHTML = "<b>Your browser does not support WebSockets.</b>";
+	                this.setState({ newChatMsg: item });
+	            }
 	            console.log('MOUNT DU MODULE MAN');
 	        }
 	    }, {
 	        key: 'render',
 	        value: function render() {
-	            // let category = this.context.params.category;
-	            // let account_id = this.context.params.account;
-	            // let renderModule;
-	            //
-	            // let isAdmin = true;
-	            // category = 'account'
-
-	            console.log('MODULE');
-
-	            // if (category === undefined) {
-	            //     renderModule = (<Provider store={store}>  <ConfigManager account_id={account_id} /> </Provider>);
-	            // } else if (category === 'account' && isAdmin=true) {
-	            //     renderModule = (<Provider store={store}>  <AccountManager/> </Provider>)
-	            // } else if (category === 'config') {
-	            //     renderModule = <ConfigManager account_id={account_id} />
-	            // } else {
-	            //     renderModule = <Homepage account_id={account_id} />
-	            // }
-
+	            console.log(this.state);
+	            console.log("this.state");
 	            return _react2.default.createElement(
 	                'div',
 	                null,
-	                _react2.default.createElement(_AccountManager2.default, null)
+	                _react2.default.createElement(_Chat2.default, { newChatMsg: this.state.newChatMsg, conn: this.conn }),
+	                _react2.default.createElement(_PlayerBoard2.default, { newGameState: this.state.newGameState })
 	            );
 	        }
 	    }]);
@@ -26562,40 +26582,91 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var ConfigManager = function (_React$Component) {
-	    _inherits(ConfigManager, _React$Component);
+	var Chat = function (_React$Component) {
+	    _inherits(Chat, _React$Component);
 
-	    function ConfigManager(props) {
-	        _classCallCheck(this, ConfigManager);
+	    function Chat(props) {
+	        _classCallCheck(this, Chat);
 
-	        return _possibleConstructorReturn(this, (ConfigManager.__proto__ || Object.getPrototypeOf(ConfigManager)).call(this, props));
+	        return _possibleConstructorReturn(this, (Chat.__proto__ || Object.getPrototypeOf(Chat)).call(this, props));
 	    }
 
-	    _createClass(ConfigManager, [{
-	        key: 'componentWillMount',
-	        value: function componentWillMount() {}
+	    _createClass(Chat, [{
+	        key: 'appendLog',
+	        value: function appendLog(item) {
+	            var doScroll = log.scrollTop > log.scrollHeight - log.clientHeight - 1;
+	            log.appendChild(item);
+	            if (doScroll) {
+	                log.scrollTop = log.scrollHeight - log.clientHeight;
+	            }
+	        }
+	    }, {
+	        key: 'componentDidMount',
+	        value: function componentDidMount() {
+	            var msg = document.getElementById("msg");
+	            var log = document.getElementById("log");
+
+	            document.getElementById("form").onsubmit = function () {
+	                if (!this.conn) {
+	                    return false;
+	                }
+	                if (!msg.value) {
+	                    return false;
+	                }
+	                this.conn.send(msg.value);
+	                msg.value = "";
+	                return false;
+	            };
+	        }
 	    }, {
 	        key: 'componentWillUnmount',
 	        value: function componentWillUnmount() {}
 	    }, {
+	        key: 'submitMsg',
+	        value: function submitMsg() {
+	            if (!this.conn) {
+	                return false;
+	            }
+	            if (!msg.value) {
+	                return false;
+	            }
+	            this.conn.send(msg.value);
+	            msg.value = "";
+	            return false;
+	        }
+	    }, {
 	        key: 'render',
 	        value: function render() {
 
+	            console.log("RERENDER CHAT");
+	            console.log(this.props);
 	            return _react2.default.createElement(
 	                'div',
 	                null,
-	                'config'
+	                'Chat',
+	                _react2.default.createElement(
+	                    'div',
+	                    { id: 'log' },
+	                    this.props.newChatMsg
+	                ),
+	                _react2.default.createElement(
+	                    'form',
+	                    { id: 'form', onsubmit: this.submitMsg },
+	                    _react2.default.createElement('input', { type: 'submit', value: 'Send' }),
+	                    _react2.default.createElement('input', { type: 'text', id: 'msg', size: '64' })
+	                )
 	            );
 	        }
 	    }]);
 
-	    return ConfigManager;
+	    return Chat;
 	}(_react2.default.Component);
 
-	exports.default = ConfigManager;
+	exports.default = Chat;
 
 /***/ },
-/* 232 */
+/* 232 */,
+/* 233 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -26655,7 +26726,7 @@
 	exports.default = HomeManager;
 
 /***/ },
-/* 233 */
+/* 234 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -26663,11 +26734,11 @@
 	exports.__esModule = true;
 	exports.connect = exports.Provider = undefined;
 
-	var _Provider = __webpack_require__(234);
+	var _Provider = __webpack_require__(235);
 
 	var _Provider2 = _interopRequireDefault(_Provider);
 
-	var _connect = __webpack_require__(237);
+	var _connect = __webpack_require__(238);
 
 	var _connect2 = _interopRequireDefault(_connect);
 
@@ -26677,7 +26748,7 @@
 	exports.connect = _connect2["default"];
 
 /***/ },
-/* 234 */
+/* 235 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -26687,11 +26758,11 @@
 
 	var _react = __webpack_require__(2);
 
-	var _storeShape = __webpack_require__(235);
+	var _storeShape = __webpack_require__(236);
 
 	var _storeShape2 = _interopRequireDefault(_storeShape);
 
-	var _warning = __webpack_require__(236);
+	var _warning = __webpack_require__(237);
 
 	var _warning2 = _interopRequireDefault(_warning);
 
@@ -26761,7 +26832,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)))
 
 /***/ },
-/* 235 */
+/* 236 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -26777,7 +26848,7 @@
 	});
 
 /***/ },
-/* 236 */
+/* 237 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -26807,7 +26878,7 @@
 	}
 
 /***/ },
-/* 237 */
+/* 238 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -26820,23 +26891,23 @@
 
 	var _react = __webpack_require__(2);
 
-	var _storeShape = __webpack_require__(235);
+	var _storeShape = __webpack_require__(236);
 
 	var _storeShape2 = _interopRequireDefault(_storeShape);
 
-	var _shallowEqual = __webpack_require__(238);
+	var _shallowEqual = __webpack_require__(239);
 
 	var _shallowEqual2 = _interopRequireDefault(_shallowEqual);
 
-	var _wrapActionCreators = __webpack_require__(239);
+	var _wrapActionCreators = __webpack_require__(240);
 
 	var _wrapActionCreators2 = _interopRequireDefault(_wrapActionCreators);
 
-	var _warning = __webpack_require__(236);
+	var _warning = __webpack_require__(237);
 
 	var _warning2 = _interopRequireDefault(_warning);
 
-	var _isPlainObject = __webpack_require__(261);
+	var _isPlainObject = __webpack_require__(262);
 
 	var _isPlainObject2 = _interopRequireDefault(_isPlainObject);
 
@@ -27208,7 +27279,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)))
 
 /***/ },
-/* 238 */
+/* 239 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -27239,7 +27310,7 @@
 	}
 
 /***/ },
-/* 239 */
+/* 240 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -27247,7 +27318,7 @@
 	exports.__esModule = true;
 	exports["default"] = wrapActionCreators;
 
-	var _redux = __webpack_require__(240);
+	var _redux = __webpack_require__(241);
 
 	function wrapActionCreators(actionCreators) {
 	  return function (dispatch) {
@@ -27256,7 +27327,7 @@
 	}
 
 /***/ },
-/* 240 */
+/* 241 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -27264,27 +27335,27 @@
 	exports.__esModule = true;
 	exports.compose = exports.applyMiddleware = exports.bindActionCreators = exports.combineReducers = exports.createStore = undefined;
 
-	var _createStore = __webpack_require__(241);
+	var _createStore = __webpack_require__(242);
 
 	var _createStore2 = _interopRequireDefault(_createStore);
 
-	var _combineReducers = __webpack_require__(256);
+	var _combineReducers = __webpack_require__(257);
 
 	var _combineReducers2 = _interopRequireDefault(_combineReducers);
 
-	var _bindActionCreators = __webpack_require__(258);
+	var _bindActionCreators = __webpack_require__(259);
 
 	var _bindActionCreators2 = _interopRequireDefault(_bindActionCreators);
 
-	var _applyMiddleware = __webpack_require__(259);
+	var _applyMiddleware = __webpack_require__(260);
 
 	var _applyMiddleware2 = _interopRequireDefault(_applyMiddleware);
 
-	var _compose = __webpack_require__(260);
+	var _compose = __webpack_require__(261);
 
 	var _compose2 = _interopRequireDefault(_compose);
 
-	var _warning = __webpack_require__(257);
+	var _warning = __webpack_require__(258);
 
 	var _warning2 = _interopRequireDefault(_warning);
 
@@ -27308,7 +27379,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)))
 
 /***/ },
-/* 241 */
+/* 242 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -27317,11 +27388,11 @@
 	exports.ActionTypes = undefined;
 	exports['default'] = createStore;
 
-	var _isPlainObject = __webpack_require__(242);
+	var _isPlainObject = __webpack_require__(243);
 
 	var _isPlainObject2 = _interopRequireDefault(_isPlainObject);
 
-	var _symbolObservable = __webpack_require__(252);
+	var _symbolObservable = __webpack_require__(253);
 
 	var _symbolObservable2 = _interopRequireDefault(_symbolObservable);
 
@@ -27574,12 +27645,12 @@
 	}
 
 /***/ },
-/* 242 */
+/* 243 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseGetTag = __webpack_require__(243),
-	    getPrototype = __webpack_require__(249),
-	    isObjectLike = __webpack_require__(251);
+	var baseGetTag = __webpack_require__(244),
+	    getPrototype = __webpack_require__(250),
+	    isObjectLike = __webpack_require__(252);
 
 	/** `Object#toString` result references. */
 	var objectTag = '[object Object]';
@@ -27642,12 +27713,12 @@
 
 
 /***/ },
-/* 243 */
+/* 244 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Symbol = __webpack_require__(244),
-	    getRawTag = __webpack_require__(247),
-	    objectToString = __webpack_require__(248);
+	var Symbol = __webpack_require__(245),
+	    getRawTag = __webpack_require__(248),
+	    objectToString = __webpack_require__(249);
 
 	/** `Object#toString` result references. */
 	var nullTag = '[object Null]',
@@ -27676,10 +27747,10 @@
 
 
 /***/ },
-/* 244 */
+/* 245 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var root = __webpack_require__(245);
+	var root = __webpack_require__(246);
 
 	/** Built-in value references. */
 	var Symbol = root.Symbol;
@@ -27688,10 +27759,10 @@
 
 
 /***/ },
-/* 245 */
+/* 246 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var freeGlobal = __webpack_require__(246);
+	var freeGlobal = __webpack_require__(247);
 
 	/** Detect free variable `self`. */
 	var freeSelf = typeof self == 'object' && self && self.Object === Object && self;
@@ -27703,7 +27774,7 @@
 
 
 /***/ },
-/* 246 */
+/* 247 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {/** Detect free variable `global` from Node.js. */
@@ -27714,10 +27785,10 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 247 */
+/* 248 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Symbol = __webpack_require__(244);
+	var Symbol = __webpack_require__(245);
 
 	/** Used for built-in method references. */
 	var objectProto = Object.prototype;
@@ -27766,7 +27837,7 @@
 
 
 /***/ },
-/* 248 */
+/* 249 */
 /***/ function(module, exports) {
 
 	/** Used for built-in method references. */
@@ -27794,10 +27865,10 @@
 
 
 /***/ },
-/* 249 */
+/* 250 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var overArg = __webpack_require__(250);
+	var overArg = __webpack_require__(251);
 
 	/** Built-in value references. */
 	var getPrototype = overArg(Object.getPrototypeOf, Object);
@@ -27806,7 +27877,7 @@
 
 
 /***/ },
-/* 250 */
+/* 251 */
 /***/ function(module, exports) {
 
 	/**
@@ -27827,7 +27898,7 @@
 
 
 /***/ },
-/* 251 */
+/* 252 */
 /***/ function(module, exports) {
 
 	/**
@@ -27862,14 +27933,14 @@
 
 
 /***/ },
-/* 252 */
+/* 253 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(253);
+	module.exports = __webpack_require__(254);
 
 
 /***/ },
-/* 253 */
+/* 254 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global, module) {'use strict';
@@ -27878,7 +27949,7 @@
 	  value: true
 	});
 
-	var _ponyfill = __webpack_require__(255);
+	var _ponyfill = __webpack_require__(256);
 
 	var _ponyfill2 = _interopRequireDefault(_ponyfill);
 
@@ -27901,10 +27972,10 @@
 
 	var result = (0, _ponyfill2['default'])(root);
 	exports['default'] = result;
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(254)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(255)(module)))
 
 /***/ },
-/* 254 */
+/* 255 */
 /***/ function(module, exports) {
 
 	module.exports = function(module) {
@@ -27920,7 +27991,7 @@
 
 
 /***/ },
-/* 255 */
+/* 256 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -27948,7 +28019,7 @@
 	};
 
 /***/ },
-/* 256 */
+/* 257 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -27956,13 +28027,13 @@
 	exports.__esModule = true;
 	exports['default'] = combineReducers;
 
-	var _createStore = __webpack_require__(241);
+	var _createStore = __webpack_require__(242);
 
-	var _isPlainObject = __webpack_require__(242);
+	var _isPlainObject = __webpack_require__(243);
 
 	var _isPlainObject2 = _interopRequireDefault(_isPlainObject);
 
-	var _warning = __webpack_require__(257);
+	var _warning = __webpack_require__(258);
 
 	var _warning2 = _interopRequireDefault(_warning);
 
@@ -28096,7 +28167,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)))
 
 /***/ },
-/* 257 */
+/* 258 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -28126,7 +28197,7 @@
 	}
 
 /***/ },
-/* 258 */
+/* 259 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -28182,7 +28253,7 @@
 	}
 
 /***/ },
-/* 259 */
+/* 260 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -28193,7 +28264,7 @@
 
 	exports['default'] = applyMiddleware;
 
-	var _compose = __webpack_require__(260);
+	var _compose = __webpack_require__(261);
 
 	var _compose2 = _interopRequireDefault(_compose);
 
@@ -28245,7 +28316,7 @@
 	}
 
 /***/ },
-/* 260 */
+/* 261 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -28288,12 +28359,12 @@
 	}
 
 /***/ },
-/* 261 */
+/* 262 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseGetTag = __webpack_require__(262),
-	    getPrototype = __webpack_require__(268),
-	    isObjectLike = __webpack_require__(270);
+	var baseGetTag = __webpack_require__(263),
+	    getPrototype = __webpack_require__(269),
+	    isObjectLike = __webpack_require__(271);
 
 	/** `Object#toString` result references. */
 	var objectTag = '[object Object]';
@@ -28356,12 +28427,12 @@
 
 
 /***/ },
-/* 262 */
+/* 263 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Symbol = __webpack_require__(263),
-	    getRawTag = __webpack_require__(266),
-	    objectToString = __webpack_require__(267);
+	var Symbol = __webpack_require__(264),
+	    getRawTag = __webpack_require__(267),
+	    objectToString = __webpack_require__(268);
 
 	/** `Object#toString` result references. */
 	var nullTag = '[object Null]',
@@ -28390,10 +28461,10 @@
 
 
 /***/ },
-/* 263 */
+/* 264 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var root = __webpack_require__(264);
+	var root = __webpack_require__(265);
 
 	/** Built-in value references. */
 	var Symbol = root.Symbol;
@@ -28402,10 +28473,10 @@
 
 
 /***/ },
-/* 264 */
+/* 265 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var freeGlobal = __webpack_require__(265);
+	var freeGlobal = __webpack_require__(266);
 
 	/** Detect free variable `self`. */
 	var freeSelf = typeof self == 'object' && self && self.Object === Object && self;
@@ -28417,7 +28488,7 @@
 
 
 /***/ },
-/* 265 */
+/* 266 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {/** Detect free variable `global` from Node.js. */
@@ -28428,10 +28499,10 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 266 */
+/* 267 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Symbol = __webpack_require__(263);
+	var Symbol = __webpack_require__(264);
 
 	/** Used for built-in method references. */
 	var objectProto = Object.prototype;
@@ -28480,7 +28551,7 @@
 
 
 /***/ },
-/* 267 */
+/* 268 */
 /***/ function(module, exports) {
 
 	/** Used for built-in method references. */
@@ -28508,10 +28579,10 @@
 
 
 /***/ },
-/* 268 */
+/* 269 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var overArg = __webpack_require__(269);
+	var overArg = __webpack_require__(270);
 
 	/** Built-in value references. */
 	var getPrototype = overArg(Object.getPrototypeOf, Object);
@@ -28520,7 +28591,7 @@
 
 
 /***/ },
-/* 269 */
+/* 270 */
 /***/ function(module, exports) {
 
 	/**
@@ -28541,7 +28612,7 @@
 
 
 /***/ },
-/* 270 */
+/* 271 */
 /***/ function(module, exports) {
 
 	/**
@@ -28576,7 +28647,7 @@
 
 
 /***/ },
-/* 271 */
+/* 272 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -28730,6 +28801,286 @@
 	};
 
 	exports.default = App;
+
+/***/ },
+/* 273 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactDom = __webpack_require__(222);
+
+	var _reactDom2 = _interopRequireDefault(_reactDom);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var PlayerBoard = function (_React$Component) {
+	    _inherits(PlayerBoard, _React$Component);
+
+	    function PlayerBoard(props) {
+	        _classCallCheck(this, PlayerBoard);
+
+	        return _possibleConstructorReturn(this, (PlayerBoard.__proto__ || Object.getPrototypeOf(PlayerBoard)).call(this, props));
+	    }
+
+	    _createClass(PlayerBoard, [{
+	        key: 'componentWillMount',
+	        value: function componentWillMount() {
+	            //
+	            // var conn;
+	            // var msg = document.getElementById("msg");
+	            // var log = document.getElementById("log");
+	            // function appendLog(item) {
+	            //     var doScroll = log.scrollTop > log.scrollHeight - log.clientHeight - 1;
+	            //     log.appendChild(item);
+	            //     if (doScroll) {
+	            //         log.scrollTop = log.scrollHeight - log.clientHeight;
+	            //     }
+	            // }
+	            // if (window["WebSocket"]) {
+	            //     conn = new WebSocket("ws://localhost:5000/ws");
+	            //     conn.onclose = function (evt) {
+	            //         var item = document.createElement("div");
+	            //         item.innerHTML = "<b>Connection closed.</b>";
+	            //         appendLog(item);
+	            //     };
+	            //     conn.onmessage = function (evt) {
+	            //         var messages = evt.data.split('\n');
+	            //         for (var i = 0; i < messages.length; i++) {
+	            //             // var obj = JSON.parse( item );
+	            //             // console.log(obj);
+	            //             var item = document.createElement("div");
+	            //             item.innerText = messages[i];
+	            //             appendLog(item);
+	            //         }
+	            //     };
+	            // } else {
+	            //     var item = document.createElement("div");
+	            //     item.innerHTML = "<b>Your browser does not support WebSockets.</b>";
+	            //     appendLog(item);
+	            // }
+	        }
+	    }, {
+	        key: 'componentWillUnmount',
+	        value: function componentWillUnmount() {}
+	    }, {
+	        key: 'render',
+	        value: function render() {
+
+	            return _react2.default.createElement(
+	                'div',
+	                null,
+	                'Board'
+	            );
+	        }
+	    }]);
+
+	    return PlayerBoard;
+	}(_react2.default.Component);
+
+	exports.default = PlayerBoard;
+
+/***/ },
+/* 274 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactDom = __webpack_require__(222);
+
+	var _reactDom2 = _interopRequireDefault(_reactDom);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var PlayerBoard = function (_React$Component) {
+	    _inherits(PlayerBoard, _React$Component);
+
+	    function PlayerBoard(props) {
+	        _classCallCheck(this, PlayerBoard);
+
+	        return _possibleConstructorReturn(this, (PlayerBoard.__proto__ || Object.getPrototypeOf(PlayerBoard)).call(this, props));
+	    }
+
+	    _createClass(PlayerBoard, [{
+	        key: 'componentWillMount',
+	        value: function componentWillMount() {}
+	    }, {
+	        key: 'componentWillUnmount',
+	        value: function componentWillUnmount() {}
+	    }, {
+	        key: 'sendCreate',
+	        value: function sendCreate() {
+	            console.log("SEND CREATE");
+	            $.ajax({
+	                method: "POST",
+	                url: "http://localhost:8080/CreateGame",
+	                data: '{"GameType":"test","NbPlayers":2,"PlayerIDS":[1,0]}'
+	            });
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            var playerBoard = _react2.default.createElement('div', null);
+	            if (this.props.newGameState) {
+	                console.log(this.props.newGameState);
+	                console.log(JSON.parse(this.props.newGameState));
+	                var objGameState = JSON.parse(this.props.newGameState);
+	                var me = objGameState["ListPlayers"][0];
+	                var him = objGameState["ListPlayers"][1];
+	                playerBoard = _react2.default.createElement(
+	                    'div',
+	                    null,
+	                    _react2.default.createElement(
+	                        'div',
+	                        null,
+	                        'Turn ',
+	                        objGameState["CurrentTurn"]
+	                    ),
+	                    _react2.default.createElement(
+	                        'div',
+	                        null,
+	                        'MOI'
+	                    ),
+	                    _react2.default.createElement(
+	                        'div',
+	                        null,
+	                        'Army',
+	                        _react2.default.createElement(
+	                            'div',
+	                            null,
+	                            ' NbSoldier ',
+	                            me["Army"]["NbSoldier"],
+	                            ' '
+	                        ),
+	                        _react2.default.createElement(
+	                            'div',
+	                            null,
+	                            ' NbLigtTank ',
+	                            me["Army"]["NbLigtTank"],
+	                            ' '
+	                        ),
+	                        _react2.default.createElement(
+	                            'div',
+	                            null,
+	                            ' NbHvyTank ',
+	                            me["Army"]["NbHvyTank"],
+	                            ' '
+	                        ),
+	                        _react2.default.createElement(
+	                            'div',
+	                            null,
+	                            ' NbArt ',
+	                            me["Army"]["NbArt"],
+	                            ' '
+	                        )
+	                    ),
+	                    _react2.default.createElement(
+	                        'div',
+	                        null,
+	                        ' Pop ',
+	                        me["NbPop"]
+	                    ),
+	                    _react2.default.createElement(
+	                        'div',
+	                        null,
+	                        'LUI'
+	                    ),
+	                    _react2.default.createElement(
+	                        'div',
+	                        null,
+	                        'Army',
+	                        _react2.default.createElement(
+	                            'div',
+	                            null,
+	                            ' NbSoldier ',
+	                            him["Army"]["NbSoldier"],
+	                            ' '
+	                        ),
+	                        _react2.default.createElement(
+	                            'div',
+	                            null,
+	                            ' NbLigtTank ',
+	                            him["Army"]["NbLigtTank"],
+	                            ' '
+	                        ),
+	                        _react2.default.createElement(
+	                            'div',
+	                            null,
+	                            ' NbHvyTank ',
+	                            him["Army"]["NbHvyTank"],
+	                            ' '
+	                        ),
+	                        _react2.default.createElement(
+	                            'div',
+	                            null,
+	                            ' NbArt ',
+	                            him["Army"]["NbArt"],
+	                            ' '
+	                        )
+	                    ),
+	                    _react2.default.createElement(
+	                        'div',
+	                        null,
+	                        ' Pop ',
+	                        him["NbPop"]
+	                    )
+	                );
+	            }
+
+	            return _react2.default.createElement(
+	                'div',
+	                null,
+	                'Test interface Gogame',
+	                _react2.default.createElement(
+	                    'div',
+	                    null,
+	                    _react2.default.createElement(
+	                        'button',
+	                        { value: 'OK', onClick: this.sendCreate },
+	                        'CREATE'
+	                    ),
+	                    playerBoard
+	                )
+	            );
+	        }
+	    }]);
+
+	    return PlayerBoard;
+	}(_react2.default.Component);
+
+	exports.default = PlayerBoard;
 
 /***/ }
 /******/ ]);
