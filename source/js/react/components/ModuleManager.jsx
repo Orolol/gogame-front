@@ -1,6 +1,5 @@
 import React                        from 'react';
 import {Link, hashHistory, router}  from 'react-router';
-import AccountManager               from './AccountManager.jsx'
 import Chat                         from './Chat.jsx'
 import Socket                       from './Socket.jsx'
 import PlayerBoard                  from './PlayerBoard.jsx'
@@ -26,7 +25,7 @@ class ModuleManager extends React.Component {
     componentDidMount(){
 
         if (window["WebSocket"]) {
-            this.conn = new WebSocket("ws://localhost:5000/ws");
+            this.conn = new WebSocket("ws://localhost:5001/ws");
             this.conn.onclose = function (evt) {
                 item = "Connection closed.";
                 this.setState({ newChatMsg: item })
