@@ -1,8 +1,12 @@
 <template>
   <div class="page">
     <p>
-      Welcome {{this.$store.state.account.nickname}}
+      Welcome
     </p>
+  </div>
+  <div class="game-lobby">
+    <div class="button create-game" @click="JoinGame">Join Game</div>
+    <div class="button game-history">View game history</div>
   </div>
 </template>
 
@@ -14,6 +18,11 @@ export default {
     if(!this.$store.state.token){
       console.log("We don't have token :(");
       this.$router.push('Login')
+    },
+    methods: {
+      JoinGame() {
+        console.log("JoinGame : ", this.$store.state.account);
+      }
     }
   }
 }

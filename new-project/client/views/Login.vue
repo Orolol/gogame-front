@@ -18,6 +18,8 @@
 </template>
 
 <script>
+import axios from "Axios"
+
 export default {
     data() {
       return {
