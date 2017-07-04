@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import axios from "Axios"
+import axios from 'axios';
 
 export default {
     data() {
@@ -32,6 +32,21 @@ export default {
     methods: {
       loginAction() {
         console.log("Try to Login ", this.login, " / ", this.password);
+        console.log("SEND POST");
+        axios.post('http://localhost:8081/Login', {
+          login: this.login,
+          password: this.password,
+          })
+          .then(function (response) {
+
+            console.log(response);
+              this.$store.commit('LOAD_TOKEN' ,response['data']['Token']['Token'])
+              this.$store.commit('LOAD_PROFILE' ,response['data'])
+              this.$router.push('/')
+          }.bind(this))
+          .catch(function (error) {
+            console.log(error);
+          });
       }
     }
 }
