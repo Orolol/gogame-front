@@ -1,13 +1,20 @@
 <template>
   <div >
     <div >
-      {{ this.currentGame }}
+      <span v-if="this.currentGame.state == 'End'">
+          Fin de partie !
+      </span>
+      <gameBoard :currentGame="this.currentGame"></gameBoard>
     </div>
   </div>
 </template>
 
 <script>
+import gameBoard from "./GameBoard"
 export default {
+    components: {
+      gameBoard
+    },
     data() {
         return {
             currentGame: {}
@@ -23,8 +30,10 @@ export default {
             this.conn.onmessage = function (evt) {
                 var messages = evt.data.split('\n');
                 for (var i = 0; i < messages.length; i++) {
-                    console.log(messages[i]);
-                    this.currentGame = messages[i]
+                    this.currentGame = JSON.parse(messages[i])
+                    if(this.currentGame.state =="END"){
+
+                    }
                     // this.$store.commit("LOAD_GAME", messages[i])
                 }
             }.bind(this);

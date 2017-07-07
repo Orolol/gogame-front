@@ -2,7 +2,7 @@
   <div>
     <div class="page">
       <p>
-        Welcome {{this.profile.Name}}
+        Welcome {{this.profile.Name}} {{this.profile.ELO}}
       </p>
     </div>
     <div class="game-lobby">
@@ -30,12 +30,7 @@ export default {
     },
     mounted() {
       if(!this.$store.state.token){
-        console.log("We don't have token :(");
         this.$router.push('Login')
-      } else {
-        console.log("OK !");
-        console.log(this.$store.state.token);
-        console.log(this.$store.state.playerProfile);
       }
     },
     methods: {
