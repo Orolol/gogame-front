@@ -1,47 +1,31 @@
 <template>
   <div >
     <div >
-      <span v-if="this.currentGame.state == 'End'">
+      <span v-if="this.currentGame.State == 'End'">
           Fin de partie !
       </span>
-      <gameBoard :currentGame="this.currentGame"></gameBoard>
+        <gameBoard :currentGame="this.currentGame"></gameBoard>
+      <div v-if="this.currentGame.State == 'Running'">
+        <policies></policies>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import gameBoard from "./GameBoard"
+import policies from "./Policies"
 export default {
     components: {
-      gameBoard
+      gameBoard,
+      policies
     },
-    data() {
-        return {
-            currentGame: {}
-        }
-    },
+    props: ['currentGame'],
     created() {
-        if (window["WebSocket"] && this.$store.state.playerProfile) {
-            this.conn = new WebSocket("ws://localhost:5001/ws?id=" + this.$store.state.playerProfile.ID);
-            console.log("CONNECTED");
-            this.conn.onclose = function (evt) {
-              console.log("DC");
-            }.bind(this);
-            this.conn.onmessage = function (evt) {
-                var messages = evt.data.split('\n');
-                for (var i = 0; i < messages.length; i++) {
-                    this.currentGame = JSON.parse(messages[i])
-                    if(this.currentGame.state =="END"){
 
-                    }
-                    // this.$store.commit("LOAD_GAME", messages[i])
-                }
-            }.bind(this);
-        } else {
-            var item = document.createElement("div");
-            item.innerHTML = "<b>Your browser does not support WebSockets.</b>";
-            this.setState({ newChatMsg: item })
-        }
+
+    },
+    methods: {
 
     }
 }
