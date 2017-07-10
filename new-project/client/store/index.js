@@ -9,6 +9,7 @@ const state = {
   currentGame : {},
   ecoPolicies: [],
   milPolicies: [],
+  actions: [],
 }
 
 const mutations = {
@@ -20,12 +21,13 @@ const mutations = {
   },
   LOAD_GAME (state, payload) {
     state.currentGame = payload
-    console.log("GAME COMMITED");
   },
   LOAD_POLICIES (state, payload) {
     state.ecoPolicies = payload.ECO
     state.milPolicies = payload.MIL
-    console.log("POLICIES LOAD");
+  },
+  LOAD_ACTIONS (state, payload) {
+    state.actions = payload
   },
 }
 

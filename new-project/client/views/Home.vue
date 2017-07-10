@@ -10,7 +10,7 @@
       <div class="button game-history">View game history</div>
     </div>
     <div>
-      <Game :currentGame="currentGame"></Game>
+      <Game :currentGame="this.$store.state.currentGame"></Game>
     </div>
   </div>
 </template>
@@ -26,7 +26,7 @@ export default {
     data() {
         return {
             profile: this.$store.state.playerProfile,
-            currentGame: {},
+            currentGame: this.$store.state.currentGame,
         }
     },
     mounted() {
@@ -42,8 +42,8 @@ export default {
           ID: this.profile.ID,
           })
           .then(function (response) {
-            this.$store.commit("LOAD_POLICIES", response.data)
-            console.log("LOAD_POLICIES", response.data);
+            this.$store.commit("LOAD_POLICIES", response.data.policies)
+            this.$store.commit("LOAD_ACTIONS", response.data.actions)
           }.bind(this))
           .catch(function (error) {
             console.log(error);
@@ -56,17 +56,32 @@ export default {
             console.log("CONNECTED");
             this.conn.onclose = function (evt) {
               console.log("DC");
+              this.conn = false
+              // clearInterval(time);
             }.bind(this);
             this.conn.onmessage = function (evt) {
                 var messages = evt.data.split('\n');
                 for (var i = 0; i < messages.length; i++) {
-                  this.currentGame = JSON.parse(messages[i])
-                  console.log(this.currentGame.State);
-                  if(this.currentGame.State =="END"){
-                    this.conn.close()
+                  if( messages[i] != '"pong"'){
+                    this.$store.commit("LOAD_GAME", JSON.parse(messages[i]))
+                    if(this.$store.state.currentGame.State =="END"){
+                      console.log("END GAME ! ");
+                      this.conn.close()
+                    }
+                  } else {
+                    console.log("ECV PONG");
                   }
                 }
             }.bind(this);
+            // let time=setInterval(function(){
+            //   console.log("SEND PONG");
+            //   this.conn.send('"pong"')
+            //   console.log(this.$store.state.currentGame.State);
+            //   if(this.$store.state.currentGame.State =="END"){
+            //     console.log("END GAME ! ");
+            //     this.conn.close()
+            //   }
+            // }.bind(this),5000);
         } else {
             console.log("No web socket :(");
         }

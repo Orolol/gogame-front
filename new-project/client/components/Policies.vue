@@ -10,7 +10,7 @@
          </div>
         </div>
     </div>
-    <div class="eco-policies policies">
+    <div class="mil-policies policies">
         <div class="army-panel">
           <div v-for="v, k in milPolicies" >
             <span>{{v.Name}}</span>
@@ -40,14 +40,13 @@ export default {
           return JSON.parse(jsonList)
       },
       sendNewPolicy(policy, event){
-        console.log("SEND ", policy, event.target.value);
         axios.post('http://localhost:8081/ChangePolicy', {
           ID: policy,
-          Value: event.target.value,
+          Value: Number(event.target.value),
+          PlayerID: this.$store.state.playerProfile.ID,
+          GameID: this.$store.state.currentGame.GameID,
           })
           .then(function (response) {
-            this.$store.commit("LOAD_POLICIES", response.data)
-            console.log("LOAD_POLICIES", response.data);
           }.bind(this))
           .catch(function (error) {
             console.log(error);
@@ -64,19 +63,18 @@ export default {
 
 .policies {
   text-align: left;
-  position: absolute;
   left: 50px;
-  top:180px;
   font-size: 14px;
   box-shadow: 5px 0 12px #D8D8D8;
 
 }
 .eco-policies {
-  position: relative;
+  position: absolute;
+  bottom:10%;
 }
 .mil-policies {
-  position: relative;
-  top: 100px;
+  position: absolute;
+  bottom:5%;
 }
 
 

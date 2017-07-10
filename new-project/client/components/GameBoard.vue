@@ -4,9 +4,25 @@
         <div class="army-panel">
           <div v-for="v, k in myBoard.Army" >
               <label>{{k}}</label>
-              <span>{{v}}</span>
+              <span>{{nFormatter(v)}}</span>
           </div>
         </div>
+        <br>
+        <div class="army-panel">
+          <div v-for="v, k in myBoard.Economy" >
+              <label>{{k}}</label>
+              <span>{{nFormatter(v)}}</span>
+          </div>
+        </div>
+        <br>
+        <div class="army-panel">
+          <div v-for="v, k in myBoard.Civilian" >
+              <label>{{k}}</label>
+              <span>{{nFormatter(v)}}</span>
+          </div>
+        </div>
+        <br>
+
 
         <div class="pop-panel">
         </div>
@@ -16,7 +32,7 @@
         <div class="army-panel">
           <div v-for="v, k in hisBoard.Army" >
               <label>{{k}}</label>
-              <span>{{v}}</span>
+              <span>{{nFormatter(v)}}</span>
           </div>
         </div>
 
@@ -34,9 +50,7 @@ export default {
     computed: {
       myBoard: function() {
         for (let player in this.currentGame['ListPlayers']){
-          console.log("MYBOARD LOOP", this.currentGame['ListPlayers'][player]);
           if(this.currentGame['ListPlayers'][player]['PlayerID'] == this.$store.state.playerProfile.ID){
-            console.log("That's me ! ");
             return this.currentGame['ListPlayers'][player]
           }
         }
@@ -44,12 +58,29 @@ export default {
       hisBoard(){
         for (let player in this.currentGame['ListPlayers']){
           if(this.currentGame['ListPlayers'][player]['PlayerID'] != this.$store.state.playerProfile.ID){
-            console.log("That's him ! ");
             return this.currentGame['ListPlayers'][player]
           }
         }
       },
     },
+    methods: {
+      nFormatter: function (num, digits) {
+          var si = [
+            { value: 1E18, symbol: "E" },
+            { value: 1E15, symbol: "P" },
+            { value: 1E12, symbol: "T" },
+            { value: 1E9,  symbol: "G" },
+            { value: 1E6,  symbol: "M" },
+            { value: 1E3,  symbol: "k" }
+          ], rx = /\.0+$|(\.[0-9]*[1-9])0+$/, i;
+          for (i = 0; i < si.length; i++) {
+            if (num >= si[i].value) {
+              return (num / si[i].value).toFixed(digits).replace(rx, "$1") + si[i].symbol;
+            }
+          }
+          return num.toFixed(digits).replace(rx, "$1");
+        }
+      },
 
 
 }
