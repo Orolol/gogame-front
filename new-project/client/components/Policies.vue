@@ -5,7 +5,7 @@
           <div v-for="v, k in ecoPolicies" >
             <span>{{v.Name}}</span>
             <select v-model="v.DefaultValue" @change="sendNewPolicy(v.ID , $event)">
-              <option v-for="elem in jsonParse(v.PossibleValue)" v-bind:value="elem">{{elem}}</option>
+              <option v-for="(elem, key) in jsonParse(v.PossibleValue)" v-bind:value="elem">{{key}}</option>
             </select>
          </div>
         </div>
@@ -15,7 +15,7 @@
           <div v-for="v, k in milPolicies" >
             <span>{{v.Name}}</span>
             <select v-model="v.DefaultValue" @change="sendNewPolicy(v.ID , $event)">
-              <option  v-for="elem in jsonParse(v.PossibleValue)" v-bind:value="elem">{{elem}}</option>
+              <option v-for="(elem, key) in jsonParse(v.PossibleValue)" v-bind:value="elem">{{key}}</option>
             </select>
           </div>
         </div>
@@ -70,7 +70,7 @@ export default {
 }
 .eco-policies {
   position: absolute;
-  bottom:10%;
+  bottom:15%;
 }
 .mil-policies {
   position: absolute;
