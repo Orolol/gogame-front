@@ -51,6 +51,7 @@ export default {
       myBoard: function() {
         for (let player in this.currentGame['ListPlayers']){
           if(this.currentGame['ListPlayers'][player]['PlayerID'] == this.$store.state.playerProfile.ID){
+            this.$store.commit("LOAD_BOARD", this.currentGame['ListPlayers'][player])
             return this.currentGame['ListPlayers'][player]
           }
         }

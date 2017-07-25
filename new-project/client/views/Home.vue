@@ -44,6 +44,7 @@ export default {
           .then(function (response) {
             this.$store.commit("LOAD_POLICIES", response.data.policies)
             this.$store.commit("LOAD_ACTIONS", response.data.actions)
+            this.$store.commit("LOAD_TECH", response.data.technology)
           }.bind(this))
           .catch(function (error) {
             console.log(error);

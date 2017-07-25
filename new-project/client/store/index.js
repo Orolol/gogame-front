@@ -10,6 +10,8 @@ const state = {
   ecoPolicies: [],
   milPolicies: [],
   actions: [],
+  technology: [],
+  myBoard: {},
 }
 
 const mutations = {
@@ -29,6 +31,13 @@ const mutations = {
   LOAD_ACTIONS (state, payload) {
     state.actions = payload
   },
+  LOAD_TECH (state, payload) {
+    state.technology = payload
+  },
+  LOAD_BOARD (state, payload) {
+    state.myBoard = payload
+  },
+
 }
 
 const actions = {

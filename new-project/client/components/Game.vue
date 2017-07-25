@@ -8,9 +8,10 @@
           Fin de partie !
       </span>
       <gameBoard :currentGame="this.currentGame"></gameBoard>
-      <div v-if="this.currentGame.State == 'Running'">
+      <div >
         <policies></policies>
         <actions></actions>
+        <technology></technology>
       </div>
     </div>
   </div>
@@ -18,13 +19,15 @@
 
 <script>
 import gameBoard from "./GameBoard"
+import technology from "./Technology"
 import actions from "./Actions"
 import policies from "./Policies"
 export default {
     components: {
       gameBoard,
       actions,
-      policies
+      policies,
+      technology
     },
     props: ['currentGame'],
     created() {

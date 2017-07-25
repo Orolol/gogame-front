@@ -1,8 +1,9 @@
 <template>
     <div class="actions">
         <div v-for="v, k in actions" >
-          <button v-if="!actionUsed[v.ID] || actionUsed[v.ID] < this.$store.state.currentGame.CurrentTurn"
+          <button :disabled="!actionUsedCheck(v.ID)"
                   @click="sendNewAction(v.ID, v.Cooldown)">{{v.Name}}</button>
+          <span v-if="!actionUsedCheck(v.ID)">{{ actionUsed[v.ID] - $store.state.currentGame.CurrentTurn}}</span>
        </div>
     </div>
 </template>
@@ -11,23 +12,29 @@
 import axios from "axios"
 import Vue from 'vue';
 export default {
+    data() {
+      return {
+        actionUsed : {}
+      }
+    },
 
     computed: {
       actions: function() {
         return this.$store.state.actions
       },
-      actionUsed: function() {
-        return {}
-      },
+
     },
     methods: {
       jsonParse(jsonList) {
           return JSON.parse(jsonList)
       },
+      actionUsedCheck: function(id) {
+        return !this.actionUsed[id] || this.actionUsed[id] < this.$store.state.currentGame.CurrentTurn
+      },
       sendNewAction(action, cd){
         axios.post('http://localhost:8081/Actions', {
           ID: action,
-          Value: 1,
+          Value: -1999,
           PlayerID: this.$store.state.playerProfile.ID,
           GameID: this.$store.state.currentGame.GameID,
           })
