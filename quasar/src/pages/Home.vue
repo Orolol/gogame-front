@@ -6,8 +6,8 @@
       </p>
     </div>
     <div class="game-lobby">
-      <div class="button create-game" @click="JoinGame">Join Game</div>
-      <div class="button game-history">View game history</div>
+      <q-btn class="button create-game" @click="JoinGame">Join Game</q-btn>
+      <q-btn class="button game-history">View game history</q-btn>
     </div>
     <div>
       <Game :currentGame="this.$store.state.currentGame"></Game>

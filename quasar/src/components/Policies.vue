@@ -4,9 +4,7 @@
         <div class="army-panel">
           <div v-for="v, k in ecoPolicies" >
             <span>{{v.Name}}</span>
-            <select v-model="v.DefaultValue" @change="sendNewPolicy(v.ActionName, $event)" class="select-policy">
-              <option v-for="(elem, key) in jsonParse(v.PossibleValue)" v-bind:value="elem">{{key}}</option>
-            </select>
+            <q-select v-model="v.DefaultValue" @change="sendNewPolicy(v.ActionName , $event)" :options="Qparse(v.PossibleValue)" />
          </div>
         </div>
     </div>
@@ -14,9 +12,7 @@
         <div class="army-panel">
           <div v-for="v, k in milPolicies" >
             <span>{{v.Name}}</span>
-            <select v-model="v.DefaultValue" @change="sendNewPolicy(v.ActionName , $event)">
-              <option v-for="(elem, key) in jsonParse(v.PossibleValue)" v-bind:value="elem">{{key}}</option>
-            </select>
+            <q-select v-model="v.DefaultValue" @change="sendNewPolicy(v.ActionName , $event)" :options="Qparse(v.PossibleValue)" />
           </div>
         </div>
     </div>
@@ -27,6 +23,11 @@
 import axios from "axios"
 export default {
 
+    data(){
+      return {
+        select:  null,
+      }
+    },
     computed: {
       ecoPolicies: function() {
         return this.$store.state.ecoPolicies
@@ -38,6 +39,17 @@ export default {
     methods: {
       jsonParse(jsonList) {
           return JSON.parse(jsonList)
+      },
+      Qparse(possibleValue){
+        let obj = JSON.parse(possibleValue)
+        let ret = []
+        console.log(obj)
+        for (let x in obj) {
+          let a = {"label" : x , "value": String(obj[x])}
+          ret.push(a)
+        }
+        console.log(ret)
+        return ret
       },
       sendNewPolicy(policy, event){
         axios.post('http://localhost:8081/ChangePolicy', {
@@ -64,7 +76,6 @@ export default {
 .policies {
   text-align: left;
   font-size: 14px;
-  box-shadow: 5px 0 12px #D8D8D8;
 }
 .eco-policies {
   bottom:15%;

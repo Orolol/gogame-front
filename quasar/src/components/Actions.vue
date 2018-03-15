@@ -1,8 +1,8 @@
 <template>
     <div class="actions decision-panel">
         <div v-for="v, k in actions" >
-          <button :disabled="!actionUsedCheck(v.ID)"
-                  @click="sendNewAction(v.ActionName, v.Cooldown)">{{v.Name}}</button>
+          <q-btn :disabled="!actionUsedCheck(v.ID)"
+                  @click="sendNewAction(v.ActionName, v.Cooldown)">{{v.Name}}</q-btn>
           <br>
           <span class="description">{{v.Description}}</span>
           <span v-if="!actionUsedCheck(v.ID)">{{ actionUsed[v.ID] - $store.state.currentGame.CurrentTurn}}</span>
@@ -19,7 +19,6 @@ export default {
         actionUsed : {}
       }
     },
-
     computed: {
       actions: function() {
         return this.$store.state.actions
@@ -61,7 +60,6 @@ export default {
 .actions {
   text-align: left;
   font-size: 14px;
-  box-shadow: 5px 0 12px #D8D8D8;
 }
 
 .description {

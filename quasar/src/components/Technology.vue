@@ -1,15 +1,23 @@
 <template>
     <div class="technology decision-panel">
-        <div v-for="type, k in technology" >
-          {{k}}
-            <div v-for="tier, k in type" >
-              Tier {{k}}
-              <div v-for="vtech, k in tier" >
-                <button :disabled="techAlreadyKnown(vtech.ActionName) "
-                        @click="sendGetTech(vtech.ActionName)">{{vtech.Name}} ({{vtech.Cost}})</button>
+      Research
+      <q-tabs>
+          <q-tab slot="title" :name="k"  v-for="type, k in technology" >{{k}}</q-tab>
+          <q-tab-pane :name="k" v-for="type, k in technology" >
+              <div v-for="tier, k in type" >
+                Tier {{k}}
+                <div v-for="vtech, k in tier" >
+                  <q-btn :disabled="techAlreadyKnown(vtech.ActionName) "
+                          @click="sendGetTech(vtech.ActionName)">
+                  <span>{{vtech.Name}}</span> 
+                  <span v-if="!techAlreadyKnown(vtech.ActionName)">({{vtech.Costs[0].Value}})</span>
+                  <span v-else> (Done) </span>
+                  
+                  </q-btn>
+                </div>
               </div>
-            </div>
-       </div>
+        </q-tab-pane>
+       </q-tabs>
     </div>
 </template>
 
@@ -17,8 +25,6 @@
 import axios from "axios"
 import Vue from 'vue';
 export default {
-
-
     computed: {
       technology() {
         let techArray = {
@@ -77,7 +83,6 @@ export default {
 .technology {
   text-align: left;
   font-size: 14px;
-  box-shadow: 5px 0 12px #D8D8D8;
 
 }
 

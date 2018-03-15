@@ -2,7 +2,7 @@
   <div >
     <div >
       <div class="turnCounter">
-        <h3>  {{ this.currentGame.CurrentTurn }}  </h3>
+        <h3> Current turn : {{ this.currentGame.CurrentTurn }}  </h3>
       </div>
       <span v-if="this.currentGame.State == 'End'">
           Fin de partie !
@@ -55,7 +55,7 @@ export default {
 
 .turnCounter {
   position: absolute;
-  top: 20%;
+  top: 5%;
   left:45%;
 }
 
@@ -68,7 +68,8 @@ export default {
 }
 
 .decision-panel{
-  width: 30%;
+  width: 40%;
+  padding: 10px;
   /* position: relative; */
 }
 </style>
