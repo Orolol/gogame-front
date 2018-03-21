@@ -11,6 +11,7 @@ const state = {
   milPolicies: [],
   actions: [],
   technology: [],
+  events: [],
   myBoard: {},
 }
 
@@ -41,6 +42,9 @@ const mutations = {
   },
   LOAD_TECH (state, payload) {
     state.technology = payload
+  },
+  LOAD_EVENTS(state, payload) {
+    state.events = payload
   },
   LOAD_BOARD (state, payload) {
     state.myBoard = payload

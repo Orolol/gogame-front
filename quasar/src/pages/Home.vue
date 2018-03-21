@@ -5,13 +5,11 @@
         Welcome {{this.profile.Name}} {{this.profile.ELO}}
       </p>
     </div>
-    <div class="game-lobby">
+    <div class="game-lobby" v-if="this.currentGame.State != 'Running'">
       <q-btn class="button create-game" @click="JoinGame">Join Game</q-btn>
       <q-btn class="button game-history">View game history</q-btn>
     </div>
-    <div>
-      <Game :currentGame="this.$store.state.currentGame"></Game>
-    </div>
+    <Game v-if="this.currentGame.State == 'Running'" :currentGame="this.$store.state.currentGame"></Game>
   </div>
 </template>
 
@@ -25,9 +23,16 @@ export default {
     },
     data() {
         return {
-            profile: this.$store.state.playerProfile,
-            currentGame: this.$store.state.currentGame,
+            
         }
+    },
+    computed: {
+      currentGame(){
+        return this.$store.state.currentGame
+      },
+      profile(){
+        return this.$store.state.playerProfile
+      },
     },
     mounted() {
       if(!this.$store.state.token){
@@ -45,6 +50,7 @@ export default {
             this.$store.commit("LOAD_POLICIES", response.data.policies)
             this.$store.commit("LOAD_ACTIONS", response.data.actions)
             this.$store.commit("LOAD_TECH", response.data.technology)
+            this.$store.commit("LOAD_EVENTS", response.data.events)
           }.bind(this))
           .catch(function (error) {
             console.log(error);

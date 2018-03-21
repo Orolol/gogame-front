@@ -1,6 +1,6 @@
 <template>
-  <div >
-    <div class="myBoard" v-if="myBoard">
+  <div class="decisionBoard">
+    <div class="decision-panel" v-if="myBoard">
         <div class="army-panel">
           <div v-for="v, k in myBoard.Army" >
               <label>{{k}}</label>
@@ -28,7 +28,12 @@
         </div>
 
     </div>
-    <div class="hisBoard" v-if="hisBoard">
+        <policies></policies>
+        <actions></actions>
+        <technology></technology>
+        
+        
+    <div class="decision-panel" v-if="hisBoard">
         <div class="army-panel">
           <div v-for="v, k in hisBoard.Army" >
               <label>{{k}}</label>
@@ -40,12 +45,23 @@
         </div>
 
     </div>
+    <event-log></event-log>
   </div>
 </template>
 
 <script>
-export default {
+import technology from "./Technology"
+import actions from "./Actions"
+import policies from "./Policies"
+import eventLog from "./EventLog"
 
+export default {
+    components: {
+      actions,
+      policies,
+      technology,
+      eventLog,
+    },
     props: ['currentGame'],
     computed: {
       myBoard: function() {

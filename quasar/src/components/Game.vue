@@ -1,6 +1,5 @@
 <template>
-  <div >
-    <div >
+    <div class="gameLobby qpage">
       <div class="turnCounter">
         <h3> Current turn : {{ this.currentGame.CurrentTurn }}  </h3>
       </div>
@@ -8,13 +7,7 @@
           Fin de partie !
       </span>
       <gameBoard :currentGame="this.currentGame"></gameBoard>
-      <div class="decisionBoard">
-        <policies></policies>
-        <actions></actions>
-        <technology></technology>
-      </div>
     </div>
-  </div>
 </template>
 
 <script>
@@ -53,6 +46,10 @@ export default {
   user-select: none;
 }
 
+.gameLobby {
+  display: flex;
+}
+
 .turnCounter {
   position: absolute;
   top: 5%;
@@ -60,10 +57,10 @@ export default {
 }
 
 .decisionBoard{
-  left: 15%;
-  top: 100px;
+  top: 75px;
   position: relative;
-  width: 70%;
+  width: 100%;
+  height: 100%;
   display: flex;
 }
 
@@ -71,5 +68,12 @@ export default {
   width: 40%;
   padding: 10px;
   /* position: relative; */
+}
+.bottom-panel {
+  position: absolute;
+  bottom:10px;
+  height: 15vh;
+  overflow-y: scroll;
+  left:45%;
 }
 </style>
