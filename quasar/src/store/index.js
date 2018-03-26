@@ -52,8 +52,49 @@ const mutations = {
 
 }
 
-const actions = {
 
+
+const actions = {
+  checkConstraint(constraints){
+    console.log('AAAA' , constraints)
+    if(!constraints){
+      return true
+    }
+    let player = state.myBoard
+    let game = state.currentGame
+    for (let c in constraints) {
+      
+      let t = constraints[c]
+      console.log('CHECK C', t)
+      if (t.Type == "tech" && ((player.Technologies && player.Technologies.indexOf(t.Value) !== -1) || !player.Technologies )){
+        console.log('SHOULD HAVE ', t.Value)
+        return false
+      } else if (t.Type == "turn") {
+        return CheckOperator(t.Value, t.Operator,game.CurrentTurn)
+      } else if (t.Type == "isWar" && !game.IsWar ){
+        return false
+      } else if( t.Type == "isNotWar" && game.IsWar ){
+        return false
+      } else if( t.Type == "Modifier") {
+        
+        for (key in player.Modifiers ){
+          if (key == t.Key ){
+            return CheckOperator(ft.Value, t.Operator, player.Modifiers[key])
+          }
+        }
+        return false
+      } else if( t.Type == "ModifierTurn" ){
+        for (key in player.Modifiers ){
+          if( key == t.Key) {
+            return CheckOperator(player.Modifiers[key], t.Operator,game.CurrentTurn)
+          }
+        }
+        return false
+      }
+
+    }
+    return true
+  },
 }
 
 const store = new Vuex.Store({

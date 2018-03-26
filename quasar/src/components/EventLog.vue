@@ -3,7 +3,7 @@
     <div class="">
         <div class="">
           <div v-for="v, k in logs" >
-            <span>Turn : {{v.Turn}}</span> <span>{{getDescription(v.ActionName)}}</span>
+            <span>Turn {{v.Turn}}</span> : <span>{{getDescription(v.ActionName)}}</span>
           </div>
         </div>
     </div>
