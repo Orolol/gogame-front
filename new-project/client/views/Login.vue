@@ -1,15 +1,15 @@
 <template>
   <div class="login-screen">
     <div>
-      <span>Login</span>
+      <label>Login</label>
       <input type="text" v-model="login" />
     </div>
     <div>
-      <span>Password</span>
+      <label>Password</label>
       <input type="text" v-model="password" />
     </div>
-    <button @click="loginAction" > Login </button>
-    <router-link :to="{ name: 'SignUp'}">Sign Up !</router-link>
+    <button @click="loginAction" class="button"> Login </button>
+    <router-link :to="{ name: 'SignUp'}" tag="button" class="button">Sign Up !</router-link>
     <div class="error-box" v-if="isError">
        {{errorMessage}}
     </div>
@@ -52,3 +52,10 @@ export default {
 }
 
 </script>
+<style>
+.login-screen {
+  top: 25%;
+  left: 45%;
+  position: absolute;
+}
+</style>

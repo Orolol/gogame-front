@@ -1,7 +1,7 @@
 <template>
     <div class="actions decision-panel">
         <div v-for="v, k in actions" >
-          <button :disabled="!actionUsedCheck(v.ID)"
+          <button :disabled="!actionUsedCheck(v.ID) || !v.isCostOk"
                   @click="sendNewAction(v.ActionName, v.Cooldown)">{{v.Name}}</button>
           <br>
           <span class="description">{{v.Description}}</span>
@@ -22,7 +22,19 @@ export default {
 
     computed: {
       actions: function() {
-        return this.$store.state.actions
+       let acts = []
+        for (let action in this.$store.state.actions){
+          let a = this.$store.state.actions[action]
+          if( this.checkCosts(a.Costs) ) {
+            a.isCostOk = true
+          } else {
+            a.isCostOk = false
+          }
+          if( this.checkConstraint(a.Constraints) ) {
+            acts.push(a)
+          } 
+        }
+        return acts
       },
 
     },
@@ -32,6 +44,93 @@ export default {
       },
       actionUsedCheck: function(id) {
         return !this.actionUsed[id] || this.actionUsed[id] < this.$store.state.currentGame.CurrentTurn
+      },
+      checkCosts(costs){
+        let player = this.$store.state.myBoard
+        if(player.Economy){
+        	for (let cost in costs) {
+            
+            let c = costs[cost]
+            switch (c.Type) {
+              case "money":
+                if (player.Economy.Money < c.Value) {
+                  return false
+                } else {
+                  return true
+                }
+              case "science":
+                if (player.Civilian.NbResearchPoint < c.Value) {
+                  return false
+                }else {
+                  return true
+                }
+              case "manpower":
+                if (player.Civilian.NbManpower < c.Value) {
+                  return false
+                }else {
+                  return true
+                }
+              case "morale":
+                if( player.Army.Morale < c.Value) {
+                  return false
+                }else {
+                  return true
+                }
+            }
+          }
+          return true
+        } else {
+          return false
+        }
+
+      },
+      checkConstraint(constraints){
+        if(!constraints){
+          return true
+        }
+        let player = this.$store.state.myBoard
+        let game = this.$store.state.currentGame
+        for (let c in constraints) {
+          
+          let t = constraints[c]
+          if (t.Type == "tech" && ((this.knownTechnology && this.knownTechnology.indexOf(t.Value) !== -1) || !this.knownTechnology )){
+            return false
+          } else if (t.Type == "turn") {
+            return CheckOperator(t.Value, t.Operator,game.CurrentTurn)
+          } else if (t.Type == "isWar" && !game.IsWar ){
+            return false
+          } else if( t.Type == "isNotWar" && game.IsWar ){
+            return false
+          } else if( t.Type == "Modifier") {
+            
+            for (key in player.Modifiers ){
+              if (key == t.Key ){
+                return CheckOperator(ft.Value, t.Operator, player.Modifiers[key])
+              }
+            }
+            return false
+          } else if( t.Type == "ModifierTurn" ){
+            for (key in player.Modifiers ){
+              if( key == t.Key) {
+                return CheckOperator(player.Modifiers[key], t.Operator,game.CurrentTurn)
+              }
+            }
+            return false
+          }
+
+        }
+        return true
+      },
+      CheckOperator(a, op, b){
+        switch(op) {
+        case ">":
+          return a > b
+        case "<":
+          return a < b
+        case "=":
+          return a == b
+        }
+        return false
       },
       sendNewAction(action, cd){
         axios.post('http://localhost:8081/Actions', {
@@ -61,7 +160,6 @@ export default {
 .actions {
   text-align: left;
   font-size: 14px;
-  box-shadow: 5px 0 12px #D8D8D8;
 }
 
 .description {

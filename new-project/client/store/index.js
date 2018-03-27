@@ -12,6 +12,7 @@ const state = {
   actions: [],
   technology: [],
   myBoard: {},
+  events: {},
 }
 
 const mutations = {
@@ -42,8 +43,25 @@ const mutations = {
   LOAD_TECH (state, payload) {
     state.technology = payload
   },
+  LOAD_EVENTS(state, payload) {
+    state.events = payload
+  },
   LOAD_BOARD (state, payload) {
     state.myBoard = payload
+    for (let i in payload.Policies) {
+      for(let j in state.ecoPolicies){
+        if(state.ecoPolicies[j].ActionName == payload.Policies[i].ActionName){
+          state.ecoPolicies[j].DefaultValue =  payload.Policies[i].Value
+        }
+      }
+    }
+    for (let i in payload.Policies) {
+      for(let j in state.milPolicies){
+        if(state.milPolicies[j].ActionName == payload.Policies[i].ActionName){
+          state.milPolicies[j].DefaultValue =  payload.Policies[i].Value
+        }
+      }
+    }
   },
 
 }

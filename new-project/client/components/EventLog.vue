@@ -1,9 +1,13 @@
 <template>
   <div class="log bottom-panel">
-      <div v-for="v, k in logs" >
-        <span>Turn {{v.Turn}}</span> : <span>{{getDescription(v.ActionName)}}</span>
-     </div>
+    <div class="">
+        <div class="">
+          <div v-for="v, k in logs" >
+            <span>Turn {{v.Turn}}</span> : <span>{{getDescription(v.ActionName)}}</span>
+          </div>
+        </div>
     </div>
+  </div>
 </template>
 
 <script>

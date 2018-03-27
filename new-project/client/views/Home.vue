@@ -45,6 +45,7 @@ export default {
             this.$store.commit("LOAD_POLICIES", response.data.policies)
             this.$store.commit("LOAD_ACTIONS", response.data.actions)
             this.$store.commit("LOAD_TECH", response.data.technology)
+            this.$store.commit("LOAD_EVENTS", response.data.events)
           }.bind(this))
           .catch(function (error) {
             console.log(error);
@@ -92,3 +93,10 @@ export default {
     }
   }
 </script>
+<style>
+
+html, body, #app {
+  height: 100vh;
+}
+
+</style>

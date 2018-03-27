@@ -4,7 +4,7 @@
         <div class="army-panel">
           <div v-for="v, k in ecoPolicies" >
             <span>{{v.Name}}</span>
-            <q-select  v-model="v.DefaultValue" :value="v.Value" :options="Qparse(v.PossibleValue2)" />
+            <q-select  v-model="v.Value" :options="Qparse(v.PossibleValue2)" @change="sendNewPolicy()" />
          </div>
         </div>
     </div>
@@ -13,7 +13,7 @@
 
           <div v-for="v, k in milPolicies" >
             <span>{{v.Name}}</span>
-            <q-select v-model="v.DefaultValue" :value="v.Value" :options="Qparse(v.PossibleValue2)" />
+            <q-select v-model="v.Value" :options="Qparse(v.PossibleValue2)" />
           </div>
         </div>
     </div>
@@ -31,6 +31,24 @@ export default {
         select:  null,
       }
     },
+    watch: {
+      ecoPolicies: {
+        handler: function (after, before) {
+          console.log('CACHANGE BORDDEL')
+          for(let i in before){
+            for(let j in after){
+              console.log("TEST BEFORE ", before[i].ActionName, "AFTER",  after[j].ActionName)
+              console.log("TEST BEFORE ", before[i].DefaultValue, "AFTER",  after[j].DefaultValue)
+              if(before[i].ActionName == after[j].ActionName && before[i].DefaultValue != after[j].DefaultValue){
+                sendNewPolicy(after[j], after[j].DefaultValue)
+              }
+            }
+          }
+          console.log("BEFORE ", before, "AFTER", after)
+        },
+        deep: true,
+      }
+    },
     computed: {
       ecoPolicies: function() {
         return this.$store.state.ecoPolicies
@@ -42,26 +60,15 @@ export default {
         return this.currentPolicies
       }
     },
-    mounted() {
-      // console.log('mounted')
-      // for (let e in this.ecoPolicies ){
-      //   for (let pv in this.ecoPolicies[e].PossibleValue2) {
-      //     if (this.ecoPolicies[e].PossibleValue2[pv].IsDefault) {
-      //       let a = {}
-      //       a['value']= this.ecoPolicies[e].PossibleValue2[pv].Value
-      //       a['label']= this.ecoPolicies[e].PossibleValue2[pv].ActionName
-      //       this.currentPolicies.push(a)
-      //       // this.currentPolicies[this.ecoPolicies[e].PossibleValue2[pv].ActionName] = this.ecoPolicies[e].PossibleValue2[pv].Value
-      //     }
-      //   }
-      // }
-      // for (let e in this.milPolicies ){
-      //   for (let pv in this.milPolicies[e].PossibleValue2) {
-      //     if (this.milPolicies[e].PossibleValue2[pv].IsDefault) {
-      //       this.currentPolicies[this.milPolicies[e].PossibleValue2[pv].ActionName] = this.milPolicies[e].PossibleValue2[pv].Value
-      //     }
-      //   }
-      // }
+    created() {
+      console.log('mounted')
+      for (let e in this.ecoPolicies ){
+        this.ecoPolicies[e].Value = this.ecoPolicies[e].DefaultValue
+      }
+      for (let e in this.milPolicies ){
+        this.milPolicies[e].Value = this.milPolicies[e].DefaultValue
+      }
+     
     },
     methods: {
       jsonParse(jsonList) {
@@ -76,6 +83,7 @@ export default {
         return ret
       },
       sendNewPolicy(policy, event){
+        console.log(policy, event)
         // axios.post('http://localhost:8081/ChangePolicy', {
         //   ID: policy,
         //   Value: Number(event.target.value),

@@ -1,20 +1,13 @@
 <template>
-  <div >
-    <div >
+    <div class="gameLobby qpage">
       <div class="turnCounter">
-        <h3>  {{ this.currentGame.CurrentTurn }}  </h3>
+        <h3> Current turn : {{ this.currentGame.CurrentTurn }}  </h3>
       </div>
       <span v-if="this.currentGame.State == 'End'">
           Fin de partie !
       </span>
       <gameBoard :currentGame="this.currentGame"></gameBoard>
-      <div class="decisionBoard">
-        <policies></policies>
-        <actions></actions>
-        <technology></technology>
-      </div>
     </div>
-  </div>
 </template>
 
 <script>
@@ -53,22 +46,39 @@ export default {
   user-select: none;
 }
 
+.gameLobby {
+  display: flex;
+}
+
 .turnCounter {
   position: absolute;
-  top: 20%;
+  top: 5%;
   left:45%;
 }
 
 .decisionBoard{
-  left: 15%;
-  top: 100px;
+  top: 75px;
   position: relative;
-  width: 70%;
+  width: 100%;
+  height: 100%;
   display: flex;
 }
 
 .decision-panel{
-  width: 30%;
+  width: 40%;
+  padding: 10px;
   /* position: relative; */
+}
+.bottom-panel {
+  position: absolute;
+  bottom:10px;
+  height: 15vh;
+  overflow-y: scroll;
+  left:25%;
+}
+
+.qpage {
+  display: flex;
+  height:70vh;
 }
 </style>
