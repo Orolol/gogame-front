@@ -1,5 +1,5 @@
 <template>
-  <div class="policies decision-panel">
+  <div class="policies">
     <div class="eco-policies policies">
         <div class="army-panel">
           <div v-for="v, k in ecoPolicies" >
@@ -14,7 +14,7 @@
         <div class="army-panel">
           <div v-for="v, k in milPolicies" >
             <span>{{v.Name}}</span>
-            <select v-model="v.DefaultValue" @change="sendNewPolicy(v.ActionName , $event)">
+            <select v-model="v.DefaultValue" @change="sendNewPolicy(v.ActionName , $event)"  class="select-policy">
               <option v-for="(elem, key) in v.PossibleValue2" v-bind:value="elem.Value">{{elem.Name}}</option>
             </select>
           </div>
@@ -87,8 +87,30 @@ export default {
   bottom:5%;
 }
 
-.select-policy {
-padding-left: 0!important;
+
+/*the container must be positioned relative:*/
+.select-policy  {
+   background-color: white;
+   height: 29px;
+   overflow: hidden;
+   width: 240px;
+   -webkit-border-radius: 20px;
+   -moz-border-radius: 20px;
+   border-radius: 20px;
+}
+.select-policy  select {
+     background: transparent;
+   border: none;
+   font-size: 14px;
+   height: 29px;
+   padding: 5px; /* If you add too much padding here, the options won't show in IE */
+   width: 268px;
+}
+
+.rounded {
+   -webkit-border-radius: 20px;
+   -moz-border-radius: 20px;
+   border-radius: 20px;
 }
 
 </style>

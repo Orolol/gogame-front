@@ -1,9 +1,7 @@
 <template>
   <div>
     <div class="page">
-      <p>
-        Welcome {{this.profile.Name}} {{this.profile.ELO}}
-      </p>
+      <top-menu></top-menu>
     </div>
     <div class="game-lobby">
       <div class="button create-game" @click="JoinGame">Join Game</div>
@@ -18,10 +16,12 @@
 <script>
 import Game from 'components/Game'
 import axios from "axios"
+import topMenu from "../components/TopMenu"
 
 export default {
     components: {
-      Game
+      Game,
+      topMenu
     },
     data() {
         return {
@@ -70,7 +70,6 @@ export default {
                       console.log("END GAME ! ");
                       this.conn.close()
                     } 
-                    console.log(JSON.parse(messages[i]))
                   } else {
                     console.log("ECV PONG");
                   }

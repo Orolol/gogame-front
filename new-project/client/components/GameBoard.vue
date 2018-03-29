@@ -1,6 +1,33 @@
 <template>
-  <div class="decisionBoard">
-    <div class="decision-panel" v-if="myBoard">
+  <div class="game-wrapper">
+    <div class="gameState">
+      <div class="turnCounter state-element">
+        Current turn : {{ this.currentGame.CurrentTurn }}
+      </div>
+      <div class="state-element" v-if="this.currentGame.State == 'End'">
+          Game ended
+      </div>
+      <div class="state-element" v-else>
+        <div v-if="this.currentGame.isWar">
+            War declared
+        </div>
+        <div v-else>
+            Peace time. Get ready for war !
+        </div>
+      </div>
+    
+    </div>
+    <div class="decisionBoard">
+    <div class="decision-panel decision-panel-side" v-if="myBoard">
+
+      
+        <div class="army-panel">
+          <div v-for="v, k in myBoard.Territory" >
+              <label>{{k}}</label>
+              <span>{{nFormatter(v, 2)}}</span>
+          </div>
+        </div>
+        <br>
         <div class="army-panel">
           <div v-for="v, k in myBoard.Army" >
               <label>{{k}}</label>
@@ -28,12 +55,25 @@
         </div>
 
     </div>
-        <policies></policies>
-        <actions></actions>
-        <technology></technology>
+
+
+    <div class="decision-panel decision-panel-main">
+      <div class="choose-decision-panel">
+        <button class="button" @click="switchPanel('policy')"> POLICIES </button>
+        <button class="button" @click="switchPanel('action')"> ACTIONS </button>
+        <button class="button" @click="switchPanel('teconology')"> TECHNOLOGIES </button>
+      </div>
+      
+      <policies v-if="myBoard && currentDecisionPanel=='policy'"></policies>
+      <actions v-if="myBoard && currentDecisionPanel=='action'"></actions>
+      <technology v-if="myBoard && currentDecisionPanel=='teconology'"></technology>
+
+    </div>
+
+   
         
         
-    <div class="decision-panel" v-if="hisBoard">
+    <div class="decision-panel decision-panel-side" v-if="hisBoard">
         <div class="army-panel">
           <div v-for="v, k in hisBoard.Army" >
               <label>{{k}}</label>
@@ -45,7 +85,8 @@
         </div>
 
     </div>
-    <event-log></event-log>
+    <event-log v-if="myBoard"></event-log>
+  </div>
   </div>
 </template>
 
@@ -63,6 +104,11 @@ export default {
       eventLog,
     },
     props: ['currentGame'],
+    data(){
+      return {
+        currentDecisionPanel: "policy",
+      }
+    },
     computed: {
       myBoard: function() {
         for (let player in this.currentGame['ListPlayers']){
@@ -81,6 +127,9 @@ export default {
       },
     },
     methods: {
+      switchPanel(n){
+        this.currentDecisionPanel = n
+      },
       nFormatter: function (num, digits) {
           var si = [
             { value: 1E18, symbol: "E" },
@@ -105,6 +154,21 @@ export default {
 
 <style>
 
+.choose-decision-panel {
+  display: flex;
+  justify-content: center;
+}
+
+.gameState {
+  justify-content: center;
+  display: flex;
+}
+
+.state-element {
+  margin: 15px;
+}
+
+
 .myBoard {
   text-align: left;
   position: absolute;
@@ -119,6 +183,39 @@ export default {
   right: 50px;
   font-size: 14px;
   box-shadow: 0 5px 12px #D8D8D8;
+}
+
+
+.decisionBoard{
+  top: 15px;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+
+.game-wrapper{
+  top: 75px;
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.decision-panel{
+  
+  padding: 10px;
+  border: 1px solid rgb(79, 83, 102);
+    /* color: white; */
+  border-radius: 15px;
+  height: 65%;
+  margin: 5px;
+  /* position: relative; */
+}
+.decision-panel-main{
+  width: 100%;
+}
+.decision-panel-side{
+  width: 30%;
 }
 
 </style>

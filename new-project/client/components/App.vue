@@ -23,6 +23,7 @@ body, html {
     /* color: white; */
     border-radius: 3px;
     padding: 5px 8px;
+    margin: 2px;
     text-align: center;
     /* text-decoration: none; */
     display: inline-block;
@@ -30,6 +31,11 @@ body, html {
     font-family: 'Comfortaa', cursive;
     color: rgb(79, 83, 102);
 
+}
+
+.button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 .button:hover {
     box-shadow: 0 4px 6px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);

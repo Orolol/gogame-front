@@ -53,6 +53,15 @@ export default {
   bottom:5%;
 }
 
+.bottom-panel {
+  position: absolute;
+  bottom:10px;
+  height: 15vh;
+  overflow-y: scroll;
+  left:25%;
+}
+
+
 .select-policy {
 padding-left: 0!important;
 }

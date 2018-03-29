@@ -1,16 +1,18 @@
 <template>
   <div class="login-screen">
-    <div>
-      <label>Login</label>
-      <input type="text" v-model="login" />
+    <div class="input-field">
+      <label class="input-label ">Login</label>
+      <input type="text" v-model="login" class="input-login "/>
     </div>
-    <div>
-      <label>Password</label>
-      <input type="text" v-model="password" />
+    <div class="input-field">
+      <label class="input-label ">Password</label>
+      <input type="text" v-model="password" class="input-login "/>
     </div>
-    <button @click="loginAction" class="button"> Login </button>
-    <router-link :to="{ name: 'SignUp'}" tag="button" class="button">Sign Up !</router-link>
+    <div class="login-button-box">
+      <button @click="loginAction" class="button"> Login </button>
+      <router-link :to="{ name: 'SignUp'}" tag="button" class="button">Sign Up !</router-link>
     <div class="error-box" v-if="isError">
+    </div>
        {{errorMessage}}
     </div>
   </div>
@@ -58,4 +60,29 @@ export default {
   left: 45%;
   position: absolute;
 }
+
+.input-login {
+  border: none;
+  border-bottom: 1px solid #555;
+  float: right;
+  padding-right: 15px;
+
+}
+
+.input-login:focus {
+    border: 1px solid #555;
+}
+
+.input-field {
+  padding: 5px 1px 5px 1px;
+}
+.input-label {
+  padding-right: 20px;
+}
+
+.login-button-box {
+text-align: center;
+padding-top:30px ;
+}
+
 </style>

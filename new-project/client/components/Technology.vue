@@ -1,12 +1,14 @@
 <template>
-    <div class="technology decision-panel">
-        <div v-for="type, k in technology" >
-          {{k}}
-            <div v-for="tier, k in type" >
+    <div class="technology">
+        <div class="technology-switch" >
+          <button  v-for="type, t in technology" class="button" @click="switchType(t)">{{t}}</button>
+        </div>
+        <div v-for="type, t in technology" >
+            <div v-for="tier, k in type" v-if="currentType==t" >
               Tier {{k}}
-              <div v-for="vtech, k in tier" >
-                <button :disabled="techAlreadyKnown(vtech.ActionName) || !vtech.isValid || !vtech.isCostValid"
-                        @click="sendGetTech(vtech.ActionName)">{{vtech.Name}} ({{vtech.Cost}})</button>
+              <div class="technology-button">
+                <button v-bind:key="vtech.Name" v-for="vtech, k in tier" class="button" :disabled="techAlreadyKnown(vtech.ActionName) || !vtech.isValid || !vtech.isCostValid"
+                        @click="sendGetTech(vtech.ActionName)">{{vtech.Name}} ({{vtech.Costs[0].Value}})</button>
               </div>
             </div>
        </div>
@@ -17,28 +19,36 @@
 import axios from "axios"
 import Vue from 'vue';
 export default {
-
+    data(){
+      return {
+        currentType : "INDUS",
+      }
+    },
 
     computed: {
       technology() {
-        let techArray = {
-          "INDUS" : {1 : [], 2: [], 3: []},
-          "MIL" : {1 : [], 2: [], 3: []},
-          "ECO" : {1 : [], 2: [], 3: []},
-        }
+        let techArray = { }
+
         for (let tech in this.$store.state.technology) {
-          if (this.checkConstraint(this.$store.state.technology[tech].Constraints)) {
-            this.$store.state.technology[tech].isValid = true
-          } else {
-            this.$store.state.technology[tech].isValid = false
+          let t = this.$store.state.technology[tech]
+          if(!techArray[t.TypeTechnology]) {
+            techArray[t.TypeTechnology] = {}
+          } 
+          if(!techArray[t.TypeTechnology][t.Tier]){
+            techArray[t.TypeTechnology][t.Tier] = []
           }
-          if (this.checkCosts(this.$store.state.technology[tech].Costs)) {
-            this.$store.state.technology[tech].isCostValid = true
+          if (this.checkConstraint(t.Constraints)) {
+            t.isValid = true
           } else {
-            this.$store.state.technology[tech].isCostValid = false
+            t.isValid = false
           }
-          if(techArray[this.$store.state.technology[tech]["TypeTechnology"]])
-            techArray[this.$store.state.technology[tech]["TypeTechnology"]][this.$store.state.technology[tech]["Tier"]].push(this.$store.state.technology[tech])
+          if (this.checkCosts(t.Costs)) {
+            t.isCostValid = true
+          } else {
+            t.isCostValid = false
+          }
+          if(techArray[t.TypeTechnology])
+            techArray[t.TypeTechnology][t.Tier].push(t)
         }
         return techArray
       },
@@ -49,6 +59,9 @@ export default {
 
     },
     methods: {
+      switchType(n){
+        this.currentType = n
+      },
       jsonParse(jsonList) {
           return JSON.parse(jsonList)
       },
@@ -109,7 +122,7 @@ export default {
         for (let c in constraints) {
           
           let t = constraints[c]
-          if (t.Type == "tech" && ((this.knownTechnology && this.knownTechnology.indexOf(t.Value) !== -1) || !this.knownTechnology )){
+          if (t.Type == "tech" && ((this.knownTechnology && this.knownTechnology.indexOf(t.Value) === -1) || !this.knownTechnology )){
             return false
           } else if (t.Type == "turn") {
             return this.CheckOperator(t.Value, t.Operator,game.CurrentTurn)
@@ -170,6 +183,16 @@ export default {
 </script>
 
 <style>
+
+.technology-switch {
+  justify-content: center;
+  display: flex;
+}
+.technology-button {
+  display: flex;
+}
+
+
 
 .technology {
   text-align: left;

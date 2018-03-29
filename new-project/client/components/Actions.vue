@@ -1,12 +1,20 @@
 <template>
-    <div class="actions decision-panel">
-        <div v-for="v, k in actions" >
-          <button :disabled="!actionUsedCheck(v.ID) || !v.isCostOk"
+    <div class="actions">
+      <div class="technology-switch" >
+       <button class="button" v-for="t, y in actions" @click="actionType = y">{{y}}</button>
+      </div>
+      <div v-for="t, y in actions" v-if="actionType == y" >
+
+        <div v-for="v, k in t">
+          <button   class="button" :disabled="!actionUsedCheck(v.ActionName) || !v.isCostOk"
                   @click="sendNewAction(v.ActionName, v.Cooldown)">{{v.Name}}</button>
           <br>
           <span class="description">{{v.Description}}</span>
-          <span v-if="!actionUsedCheck(v.ID)">{{ actionUsed[v.ID] - $store.state.currentGame.CurrentTurn}}</span>
-       </div>
+          <span v-if="!actionUsedCheck(v.ActionName)">{{ actionUsed[v.ActionName] - $store.state.currentGame.CurrentTurn}}</span>
+
+        </div>
+      
+    </div>
     </div>
 </template>
 
@@ -16,25 +24,43 @@ import Vue from 'vue';
 export default {
     data() {
       return {
-        actionUsed : {}
+        actionUsed : {},
+        actionType: "ECONOMIC",
       }
     },
-
     computed: {
       actions: function() {
-       let acts = []
+        let acts = []
+
+        let sortedActions = {}
         for (let action in this.$store.state.actions){
           let a = this.$store.state.actions[action]
+          if(!sortedActions[a.Type]) {
+            sortedActions[a.Type] = []
+          } 
           if( this.checkCosts(a.Costs) ) {
             a.isCostOk = true
           } else {
             a.isCostOk = false
           }
           if( this.checkConstraint(a.Constraints) ) {
-            acts.push(a)
+            sortedActions[a.Type].push(a)
           } 
         }
-        return acts
+
+        // for (let action in sortedActions){
+        //   let a = sortedActions[action]
+        //   if( this.checkCosts(a.Costs) ) {
+        //     a.isCostOk = true
+        //   } else {
+        //     a.isCostOk = false
+        //   }
+        //   if( this.checkConstraint(a.Constraints) ) {
+        //     acts.push(a)
+        //   } 
+        // }
+        console.log(sortedActions)
+        return sortedActions
       },
 
     },
@@ -91,9 +117,8 @@ export default {
         let player = this.$store.state.myBoard
         let game = this.$store.state.currentGame
         for (let c in constraints) {
-          
           let t = constraints[c]
-          if (t.Type == "tech" && ((this.knownTechnology && this.knownTechnology.indexOf(t.Value) !== -1) || !this.knownTechnology )){
+          if (t.Type == "tech" && ((player.Technologies && player.Technologies.indexOf(t.Value) === -1) || !player.Technologies )){
             return false
           } else if (t.Type == "turn") {
             return CheckOperator(t.Value, t.Operator,game.CurrentTurn)
