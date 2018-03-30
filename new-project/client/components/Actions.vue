@@ -3,18 +3,17 @@
       <div class="technology-switch" >
        <button class="button" v-for="t, y in actions" @click="actionType = y">{{y}}</button>
       </div>
-      <div v-for="t, y in actions" v-if="actionType == y" >
-
-        <div v-for="v, k in t">
-          <button   class="button" :disabled="!actionUsedCheck(v.ActionName) || !v.isCostOk"
-                  @click="sendNewAction(v.ActionName, v.Cooldown)">{{v.Name}}</button>
-          <br>
-          <span class="description">{{v.Description}}</span>
-          <span v-if="!actionUsedCheck(v.ActionName)">{{ actionUsed[v.ActionName] - $store.state.currentGame.CurrentTurn}}</span>
-
+      <transition name="slide-fade">
+        <div v-for="t, y in actions" v-if="actionType == y" >
+          <div v-for="v, k in t">
+            <button   class="button" :disabled="!actionUsedCheck(v.ActionName) || !v.isCostOk"
+                    @click="sendNewAction(v.ActionName, v.Cooldown)">{{v.Name}}</button>
+            <br>
+            <span class="description">{{v.Description}}</span>
+            <span v-if="!actionUsedCheck(v.ActionName)">{{ actionUsed[v.ActionName] - $store.state.currentGame.CurrentTurn}}</span>
+          </div>
         </div>
-      
-    </div>
+      </transition>
     </div>
 </template>
 
@@ -191,6 +190,17 @@ export default {
   font-size: 10px;
 }
 
+.slide-fade-enter-active {
+  transition: all .3s ease;
+}
+.slide-fade-leave-active {
+  transition: all .8s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+}
+.slide-fade-enter, .slide-fade-leave-to
+/* .slide-fade-leave-active below version 2.1.8 */ {
+  transform: translateX(10px);
+  opacity: 0;
+}
 
 
 </style>

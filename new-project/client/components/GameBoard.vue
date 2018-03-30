@@ -103,12 +103,12 @@ export default {
       technology,
       eventLog,
     },
-    props: ['currentGame'],
     data(){
       return {
         currentDecisionPanel: "policy",
       }
     },
+     
     computed: {
       myBoard: function() {
         for (let player in this.currentGame['ListPlayers']){
@@ -117,6 +117,9 @@ export default {
             return this.currentGame['ListPlayers'][player]
           }
         }
+      },
+      currentGame(){
+        return this.$store.state.currentGame
       },
       hisBoard(){
         for (let player in this.currentGame['ListPlayers']){

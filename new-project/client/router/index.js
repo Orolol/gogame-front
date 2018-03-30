@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from '../views/Home'
+import Game from '../views/Game'
 import Login from '../views/Login'
 import SignUp from '../views/SignUp'
 
@@ -13,6 +14,11 @@ export default new Router({
       path: '/',
       component: Home,
       name: "Home"
+    },
+    {
+      path: '/Game',
+      component: Game,
+      name: "Game"
     },
     {
       path: '/Login',

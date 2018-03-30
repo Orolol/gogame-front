@@ -1,7 +1,6 @@
 <template>
   <div class="top-menu vertical-menu">
-      <div class="top-menu-item">Queue PVP game</div>
-      <div class="top-menu-item">Queue P VS AI game</div>
+      <router-link tag="div" class="top-menu-item" to="Game">Play !</router-link>
       <div class="top-menu-item">Leaderboards</div>
       <div class="top-menu-item">Profile</div>
       <div class="top-menu-item">About</div>
@@ -14,7 +13,7 @@ export default {
 </script>
 <style>
 .top-menu {
-    position: absolute;
+    /* position: absolute; */
     top: 5%;
     /* left: 25%; */
     /* display: inline-flex; */

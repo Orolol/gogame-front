@@ -1,8 +1,22 @@
 <template>
   <div id="app">
+    <top-menu></top-menu>
     <router-view></router-view>
   </div>
 </template>
+
+<script>
+import topMenu from "./TopMenu"
+export default {
+      components:{
+        topMenu
+      },
+      methods: {
+
+    }
+}
+</script>
+
 
 <style>
 @import url('https://fonts.googleapis.com/css?family=Advent+Pro|Comfortaa|Julius+Sans+One');
