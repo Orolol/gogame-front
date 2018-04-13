@@ -8,28 +8,27 @@
 <script>
 import topMenu from "./TopMenu"
 export default {
-      components:{
+    components: {
         topMenu
-      },
-      methods: {
-
-    }
+    },
+    methods: {}
 }
 </script>
 
 
 <style>
-@import url('https://fonts.googleapis.com/css?family=Advent+Pro|Comfortaa|Julius+Sans+One');
-body, html {
-  margin: 0;
+@import url("https://fonts.googleapis.com/css?family=Advent+Pro|Comfortaa|Julius+Sans+One");
+body,
+html {
+    margin: 0;
     /* font-family: 'Julius Sans One', sans-serif; */
-  /* font-family: 'Advent Pro', sans-serif; */
-  font-family: 'Comfortaa', cursive;
-  color: rgb(79, 83, 102);
+    /* font-family: 'Advent Pro', sans-serif; */
+    font-family: "Comfortaa", cursive;
+    color: rgb(79, 83, 102);
 }
 .page {
-  text-align: center;
-  /* nesting for the need to test postcss */
+    text-align: center;
+    /* nesting for the need to test postcss */
 }
 .button {
     background-color: rgb(255, 255, 255); /* Green */
@@ -42,9 +41,11 @@ body, html {
     /* text-decoration: none; */
     display: inline-block;
 
-    font-family: 'Comfortaa', cursive;
+    font-family: "Comfortaa", cursive;
     color: rgb(79, 83, 102);
-
+}
+.button-active {
+    background-color: rgb(180, 180, 180);
 }
 
 .button:disabled {
@@ -52,6 +53,7 @@ body, html {
     cursor: not-allowed;
 }
 .button:hover {
-    box-shadow: 0 4px 6px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+    box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.24),
+        0 17px 50px 0 rgba(0, 0, 0, 0.19);
 }
 </style>

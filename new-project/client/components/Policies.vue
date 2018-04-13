@@ -26,91 +26,95 @@
 <script>
 import axios from "axios"
 export default {
-
+    props: ["propsPolicies"],
     computed: {
-      ecoPolicies: function() {
-        return this.$store.state.ecoPolicies
-      },
-      milPolicies: function() {
-        return this.$store.state.milPolicies
-      },
+        ecoPolicies: function() {
+            return this.propsPolicies
+        },
+        milPolicies: function() {
+            return this.$store.state.milPolicies
+        }
     },
-    mounted(){
-      for(let i in this.$store.state.myBoard.Policies) {
-        for(let j in this.$store.state.ecoPolicies){
-          if(this.$store.state.ecoPolicies[j].ActionName == this.$store.state.myBoard.Policies[i].ActionName){
-            this.$store.state.ecoPolicies[j].DefaultValue = Number(this.$store.state.myBoard.Policies[i].Value)
-          }
+    mounted() {
+        for (let i in this.$store.state.myBoard.Policies) {
+            for (let j in this.$store.state.ecoPolicies) {
+                if (
+                    this.$store.state.ecoPolicies[j].ActionName ==
+                    this.$store.state.myBoard.Policies[i].ActionName
+                ) {
+                    this.$store.state.ecoPolicies[j].DefaultValue = Number(
+                        this.$store.state.myBoard.Policies[i].Value
+                    )
+                }
+            }
+            for (let j in this.$store.state.milPolicies) {
+                if (
+                    this.$store.state.milPolicies[j].ActionName ==
+                    this.$store.state.myBoard.Policies[i].ActionName
+                ) {
+                    this.$store.state.milPolicies[j].DefaultValue = Number(
+                        this.$store.state.myBoard.Policies[i].Value
+                    )
+                }
+            }
         }
-        for(let j in this.$store.state.milPolicies){
-          if(this.$store.state.milPolicies[j].ActionName == this.$store.state.myBoard.Policies[i].ActionName){
-            this.$store.state.milPolicies[j].DefaultValue =  Number(this.$store.state.myBoard.Policies[i].Value)
-          }
-        }
-      }
     },
     methods: {
-      jsonParse(jsonList) {
-          return JSON.parse(jsonList)
-      },
-      sendNewPolicy(policy, event){
-        console.log(policy, event)
-        axios.post('http://localhost:8081/ChangePolicy', {
-          ID: policy,
-          Value: Number(event.target.value),
-          PlayerID: this.$store.state.playerProfile.ID,
-          GameID: this.$store.state.currentGame.GameID,
-          })
-          .then(function (response) {
-          }.bind(this))
-          .catch(function (error) {
-            console.log(error);
-          });
-      },
+        jsonParse(jsonList) {
+            return JSON.parse(jsonList)
+        },
+        sendNewPolicy(policy, event) {
+            console.log(policy, event)
+            axios
+                .post("http://localhost:8081/ChangePolicy", {
+                    ID: policy,
+                    Value: Number(event.target.value),
+                    PlayerID: this.$store.state.playerProfile.ID,
+                    GameID: this.$store.state.currentGame.GameID
+                })
+                .then(function(response) {}.bind(this))
+                .catch(function(error) {
+                    console.log(error)
+                })
+        }
     }
-
-
-
 }
 </script>
 
 <style>
-
 .policies {
-  text-align: left;
-  font-size: 14px;
+    text-align: left;
+    font-size: 14px;
 }
 .eco-policies {
-  bottom:15%;
+    bottom: 15%;
 }
 .mil-policies {
-  bottom:5%;
+    bottom: 5%;
 }
-
 
 /*the container must be positioned relative:*/
-.select-policy  {
-   background-color: white;
-   height: 29px;
-   overflow: hidden;
-   width: 240px;
-   -webkit-border-radius: 20px;
-   -moz-border-radius: 20px;
-   border-radius: 20px;
+.select-policy {
+    background-color: white;
+    height: 29px;
+    overflow: hidden;
+    width: 240px;
+    -webkit-border-radius: 20px;
+    -moz-border-radius: 20px;
+    border-radius: 20px;
 }
-.select-policy  select {
-     background: transparent;
-   border: none;
-   font-size: 14px;
-   height: 29px;
-   padding: 5px; /* If you add too much padding here, the options won't show in IE */
-   width: 268px;
+.select-policy select {
+    background: transparent;
+    border: none;
+    font-size: 14px;
+    height: 29px;
+    padding: 5px; /* If you add too much padding here, the options won't show in IE */
+    width: 268px;
 }
 
 .rounded {
-   -webkit-border-radius: 20px;
-   -moz-border-radius: 20px;
-   border-radius: 20px;
+    -webkit-border-radius: 20px;
+    -moz-border-radius: 20px;
+    border-radius: 20px;
 }
-
 </style>

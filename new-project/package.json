@@ -43,7 +43,9 @@
     "babel-runtime": "^6.18.0",
     "promise-polyfill": "^6.0.2",
     "vue": "^2.2.0",
+    "vue-circle-slider": "^1.0.2",
     "vue-router": "^2.0.0",
+    "vue-slider-component": "^2.6.1",
     "vue-tabs-component": "^1.4.0",
     "vuex": "^2.0.0",
     "vuex-router-sync": "^4.0.0"

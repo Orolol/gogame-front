@@ -24,28 +24,28 @@
         <div class="army-panel">
           <div v-for="v, k in myBoard.Territory" >
               <label>{{k}}</label>
-              <span>{{nFormatter(v, 2)}}</span>
+              <span>{{v | number0digits}}</span>
           </div>
         </div>
         <br>
         <div class="army-panel">
           <div v-for="v, k in myBoard.Army" >
               <label>{{k}}</label>
-              <span>{{nFormatter(v, 2)}}</span>
+              <span>{{v | number0digits}}</span>
           </div>
         </div>
         <br>
         <div class="army-panel">
           <div v-for="v, k in myBoard.Economy" >
               <label>{{k}}</label>
-              <span>{{nFormatter(v, 2)}}</span>
+              <span>{{v | number2digits}}</span>
           </div>
         </div>
         <br>
         <div class="army-panel">
           <div v-for="v, k in myBoard.Civilian" >
               <label>{{k}}</label>
-              <span>{{nFormatter(v, 2)}}</span>
+              <span>{{v | number0digits}}</span>
           </div>
         </div>
         <br>
@@ -59,14 +59,12 @@
 
     <div class="decision-panel decision-panel-main">
       <div class="choose-decision-panel">
-        <button class="button" @click="switchPanel('policy')"> POLICIES </button>
-        <button class="button" @click="switchPanel('action')"> ACTIONS </button>
-        <button class="button" @click="switchPanel('teconology')"> TECHNOLOGIES </button>
+        <button v-for="c, k in categories" class="button" @click="switchPanel(k)" :class="{'button-active': currentDecisionPanel == k}"> {{k}} </button>
+        <button class="button" @click="switchPanel('teconology')" :class="{'button-active': currentDecisionPanel == 'teconology'}"> TECHNOLOGIES </button>
       </div>
       
-      <policies v-if="myBoard && currentDecisionPanel=='policy'"></policies>
-      <actions v-if="myBoard && currentDecisionPanel=='action'"></actions>
       <technology v-if="myBoard && currentDecisionPanel=='teconology'"></technology>
+      <category v-for="c, k in categories" :category="k"  v-if="myBoard && currentDecisionPanel==k" :subs="c"></category>
 
     </div>
 
@@ -94,131 +92,142 @@
 import technology from "./Technology"
 import actions from "./Actions"
 import policies from "./Policies"
+import category from "./Category"
 import eventLog from "./EventLog"
 
 export default {
     components: {
-      actions,
-      policies,
-      technology,
-      eventLog,
+        actions,
+        policies,
+        technology,
+        eventLog,
+        category
     },
-    data(){
-      return {
-        currentDecisionPanel: "policy",
-      }
+    data() {
+        return {
+            currentDecisionPanel: "policy"
+        }
     },
-     
+
     computed: {
-      myBoard: function() {
-        for (let player in this.currentGame['ListPlayers']){
-          if(this.currentGame['ListPlayers'][player]['PlayerID'] == this.$store.state.playerProfile.ID){
-            this.$store.commit("LOAD_BOARD", this.currentGame['ListPlayers'][player])
-            return this.currentGame['ListPlayers'][player]
-          }
+        myBoard: function() {
+            for (let player in this.currentGame["ListPlayers"]) {
+                if (
+                    this.currentGame["ListPlayers"][player]["PlayerID"] ==
+                    this.$store.state.playerProfile.ID
+                ) {
+                    this.$store.commit(
+                        "LOAD_BOARD",
+                        this.currentGame["ListPlayers"][player]
+                    )
+                    return this.currentGame["ListPlayers"][player]
+                }
+            }
+        },
+        categories() {
+            return this.$store.state.board
+        },
+        currentGame() {
+            return this.$store.state.currentGame
+        },
+        hisBoard() {
+            for (let player in this.currentGame["ListPlayers"]) {
+                if (
+                    this.currentGame["ListPlayers"][player]["PlayerID"] !=
+                    this.$store.state.playerProfile.ID
+                ) {
+                    return this.currentGame["ListPlayers"][player]
+                }
+            }
         }
-      },
-      currentGame(){
-        return this.$store.state.currentGame
-      },
-      hisBoard(){
-        for (let player in this.currentGame['ListPlayers']){
-          if(this.currentGame['ListPlayers'][player]['PlayerID'] != this.$store.state.playerProfile.ID){
-            return this.currentGame['ListPlayers'][player]
-          }
-        }
-      },
     },
     methods: {
-      switchPanel(n){
-        this.currentDecisionPanel = n
-      },
-      nFormatter: function (num, digits) {
-          var si = [
-            { value: 1E18, symbol: "E" },
-            { value: 1E15, symbol: "P" },
-            { value: 1E12, symbol: "T" },
-            { value: 1E9,  symbol: "G" },
-            { value: 1E6,  symbol: "M" },
-            { value: 1E3,  symbol: "k" }
-          ], rx = /\.0+$|(\.[0-9]*[1-9])0+$/, i;
-          for (i = 0; i < si.length; i++) {
-            if (num >= si[i].value) {
-              return (num / si[i].value).toFixed(digits).replace(rx, "$1") + si[i].symbol;
+        switchPanel(n) {
+            this.currentDecisionPanel = n
+        },
+        nFormatter: function(num, digits) {
+            var si = [
+                    { value: 1e18, symbol: "E" },
+                    { value: 1e15, symbol: "P" },
+                    { value: 1e12, symbol: "T" },
+                    { value: 1e9, symbol: "G" },
+                    { value: 1e6, symbol: "M" },
+                    { value: 1e3, symbol: "k" }
+                ],
+                rx = /\.0+$|(\.[0-9]*[1-9])0+$/,
+                i
+            for (i = 0; i < si.length; i++) {
+                if (num >= si[i].value) {
+                    return (
+                        (num / si[i].value).toFixed(digits).replace(rx, "$1") +
+                        si[i].symbol
+                    )
+                }
             }
-          }
-          return num.toFixed(digits).replace(rx, "$1");
+            return num.toFixed(digits).replace(rx, "$1")
         }
-      },
-
-
+    }
 }
 </script>
 
 <style>
-
 .choose-decision-panel {
-  display: flex;
-  justify-content: center;
+    display: flex;
+    justify-content: center;
 }
 
 .gameState {
-  justify-content: center;
-  display: flex;
+    justify-content: center;
+    display: flex;
 }
 
 .state-element {
-  margin: 15px;
+    margin: 15px;
 }
-
 
 .myBoard {
-  text-align: left;
-  position: absolute;
-  left: 50px;
-  font-size: 14px;
-  box-shadow: 5px 0 12px #D8D8D8;
-
+    text-align: left;
+    position: absolute;
+    left: 50px;
+    font-size: 14px;
+    box-shadow: 5px 0 12px #d8d8d8;
 }
 .hisBoard {
-  text-align: right;
-  position: absolute;
-  right: 50px;
-  font-size: 14px;
-  box-shadow: 0 5px 12px #D8D8D8;
+    text-align: right;
+    position: absolute;
+    right: 50px;
+    font-size: 14px;
+    box-shadow: 0 5px 12px #d8d8d8;
 }
 
-
-.decisionBoard{
-  top: 15px;
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: flex;
+.decisionBoard {
+    top: 15px;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
 }
 
-.game-wrapper{
-  top: 75px;
-  position: relative;
-  width: 100%;
-  height: 100%;
+.game-wrapper {
+    top: 75px;
+    position: relative;
+    width: 100%;
+    height: 100%;
 }
 
-.decision-panel{
-  
-  padding: 10px;
-  border: 1px solid rgb(79, 83, 102);
+.decision-panel {
+    padding: 10px;
+    border: 1px solid rgb(79, 83, 102);
     /* color: white; */
-  border-radius: 15px;
-  height: 65%;
-  margin: 5px;
-  /* position: relative; */
+    border-radius: 15px;
+    height: 65%;
+    margin: 5px;
+    /* position: relative; */
 }
-.decision-panel-main{
-  width: 100%;
+.decision-panel-main {
+    width: 100%;
 }
-.decision-panel-side{
-  width: 30%;
+.decision-panel-side {
+    width: 30%;
 }
-
 </style>
