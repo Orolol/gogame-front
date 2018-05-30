@@ -89,11 +89,11 @@
 </template>
 
 <script>
-import technology from "./Technology"
-import actions from "./Actions"
-import policies from "./Policies"
-import category from "./Category"
-import eventLog from "./EventLog"
+import technology from './Technology'
+import actions from './Actions'
+import policies from './Policies'
+import category from './Category'
+import eventLog from './EventLog'
 
 export default {
     components: {
@@ -105,22 +105,22 @@ export default {
     },
     data() {
         return {
-            currentDecisionPanel: "policy"
+            currentDecisionPanel: 'policy'
         }
     },
 
     computed: {
         myBoard: function() {
-            for (let player in this.currentGame["ListPlayers"]) {
+            for (let player in this.currentGame['ListPlayers']) {
                 if (
-                    this.currentGame["ListPlayers"][player]["PlayerID"] ==
+                    this.currentGame['ListPlayers'][player]['PlayerID'] ==
                     this.$store.state.playerProfile.ID
                 ) {
                     this.$store.commit(
-                        "LOAD_BOARD",
-                        this.currentGame["ListPlayers"][player]
+                        'LOAD_BOARD',
+                        this.currentGame['ListPlayers'][player]
                     )
-                    return this.currentGame["ListPlayers"][player]
+                    return this.currentGame['ListPlayers'][player]
                 }
             }
         },
@@ -131,12 +131,12 @@ export default {
             return this.$store.state.currentGame
         },
         hisBoard() {
-            for (let player in this.currentGame["ListPlayers"]) {
+            for (let player in this.currentGame['ListPlayers']) {
                 if (
-                    this.currentGame["ListPlayers"][player]["PlayerID"] !=
+                    this.currentGame['ListPlayers'][player]['PlayerID'] !=
                     this.$store.state.playerProfile.ID
                 ) {
-                    return this.currentGame["ListPlayers"][player]
+                    return this.currentGame['ListPlayers'][player]
                 }
             }
         }
@@ -147,24 +147,24 @@ export default {
         },
         nFormatter: function(num, digits) {
             var si = [
-                    { value: 1e18, symbol: "E" },
-                    { value: 1e15, symbol: "P" },
-                    { value: 1e12, symbol: "T" },
-                    { value: 1e9, symbol: "G" },
-                    { value: 1e6, symbol: "M" },
-                    { value: 1e3, symbol: "k" }
+                    { value: 1e18, symbol: 'E' },
+                    { value: 1e15, symbol: 'P' },
+                    { value: 1e12, symbol: 'T' },
+                    { value: 1e9, symbol: 'G' },
+                    { value: 1e6, symbol: 'M' },
+                    { value: 1e3, symbol: 'k' }
                 ],
                 rx = /\.0+$|(\.[0-9]*[1-9])0+$/,
                 i
             for (i = 0; i < si.length; i++) {
                 if (num >= si[i].value) {
                     return (
-                        (num / si[i].value).toFixed(digits).replace(rx, "$1") +
+                        (num / si[i].value).toFixed(digits).replace(rx, '$1') +
                         si[i].symbol
                     )
                 }
             }
-            return num.toFixed(digits).replace(rx, "$1")
+            return num.toFixed(digits).replace(rx, '$1')
         }
     }
 }

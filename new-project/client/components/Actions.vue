@@ -9,18 +9,18 @@
               <span v-if="!actionUsedCheck(v.ActionName)">{{ actionUsed[v.ActionName] - $store.state.currentGame.CurrentTurn}}</span>
             </div>
           <div v-if="v.Selector == 'range'">
+              <span class="description">{{v.ActionName}} {{cmpBoardValues[v.Effects[0].ModifierType][v.Effects[0].ModifierName]}} / {{maxSlider(v.Constraints[2].Value,cmpBoardValues[v.Effects[0].ModifierType][v.Effects[0].ModifierName])}}</span>
             <vue-slider 
               ref="slider"
-              v-model="cmpRangeValues[v.ActionName]" 
+              v-model="cmpBoardValues[v.Effects[0].ModifierType][v.Effects[0].ModifierName]" 
               :clickable="false"
               :disabled="!actionUsedCheck(v.ActionName)"
+              :tooltip= "'hover'"
               :min="parseInt(v.Constraints[0].Value)"
-              :max="maxSlider(v.Constraints[2].Value,v.ActionName) "
-              @drag-end="sendNewAction(v.ActionName, v.Cooldown,cmpRangeValues[v.ActionName] )"></vue-slider>
-            {{cmpRangeValues[v.ActionName]}} / {{maxSlider(v.Constraints[2].Value,v.ActionName) }}
+              :max="maxSlider(v.Constraints[2].Value,cmpBoardValues[v.Effects[0].ModifierType][v.Effects[0].ModifierName]) "
+              @drag-end="sendNewAction(v.ActionName, v.Cooldown,cmpBoardValues[v.Effects[0].ModifierType][v.Effects[0].ModifierName] )"></vue-slider>
             <br>
-            <span class="description">{{v.Description}}</span>
-            <span v-if="!actionUsedCheck(v.ActionName)">{{ actionUsed[v.ActionName] - $store.state.currentGame.CurrentTurn}}</span>
+            <!-- <span v-if="!actionUsedCheck(v.ActionName)">{{ actionUsed[v.ActionName] - $store.state.currentGame.CurrentTurn}}</span> -->
           </div>
           
           
@@ -29,19 +29,19 @@
 </template>
 
 <script>
-import axios from "axios"
-import Vue from "vue"
-import VueCircleSlider from "vue-circle-slider"
-import VueSlider from "vue-slider-component"
+import axios from 'axios'
+import Vue from 'vue'
+import VueCircleSlider from 'vue-circle-slider'
+import VueSlider from 'vue-slider-component'
 export default {
     data() {
         return {
             actionUsed: {},
             rangeValues: {},
-            actionType: "ECONOMIC"
+            actionType: 'ECONOMIC'
         }
     },
-    props: ["propsActions"],
+    props: ['propsActions'],
     components: {
         VueCircleSlider,
         VueSlider
@@ -49,9 +49,9 @@ export default {
     mounted() {
         for (let action in this.propsActions) {
             let a = this.propsActions[action]
-            if (a.Selector == "range") {
+            if (a.Selector == 'range') {
                 if (!this.$store.state.rangeValues[a.ActionName]) {
-                    this.$store.commit("LOAD_RANGE_VALUES", {
+                    this.$store.commit('LOAD_RANGE_VALUES', {
                         name: a.ActionName,
                         value: a.BaseValue
                     })
@@ -64,13 +64,16 @@ export default {
         cmpRangeValues() {
             return this.$store.state.rangeValues
         },
+        cmpBoardValues() {
+            return this.$store.state.myBoard
+        },
 
         getMaxSlider() {
             let c = 0
             let n = {}
             for (let a in this.actions) {
                 for (let c in this.actions[a].Constraints) {
-                    if (this.actions[a].Constraints[c].Type == "linked") {
+                    if (this.actions[a].Constraints[c].Type == 'linked') {
                         if (!n[this.actions[a].Constraints[c].Value]) {
                             n[this.actions[a].Constraints[c].Value] = 1
                         } else {
@@ -90,7 +93,7 @@ export default {
             for (let a in this.actions) {
                 let isLinked = false
                 for (let c in this.actions[a].Constraints) {
-                    if (this.actions[a].Constraints[c].Type == "linked") {
+                    if (this.actions[a].Constraints[c].Type == 'linked') {
                         if (
                             !totalLinkedValues[
                                 this.actions[a].Constraints[c].Value
@@ -98,11 +101,15 @@ export default {
                         ) {
                             totalLinkedValues[
                                 this.actions[a].Constraints[c].Value
-                            ] = this.cmpRangeValues[this.actions[a].ActionName]
+                            ] = this.cmpBoardValues[
+                                this.actions[a].Effects[0].ModifierType
+                            ][this.actions[a].Effects[0].ModifierName]
                         } else {
                             totalLinkedValues[
                                 this.actions[a].Constraints[c].Value
-                            ] += this.cmpRangeValues[this.actions[a].ActionName]
+                            ] += this.cmpBoardValues[
+                                this.actions[a].Effects[0].ModifierType
+                            ][this.actions[a].Effects[0].ModifierName]
                         }
                     }
                 }
@@ -137,7 +144,7 @@ export default {
         },
         maxSlider(v, n) {
             // if (this.getMaxSlider[v]) {
-            return this.getMaxSlider[v] + this.cmpRangeValues[n]
+            return this.getMaxSlider[v] + n
             // } else {
             // console.log("HOHO", this.getMaxSlider[v], v)
             // return 100
@@ -158,25 +165,25 @@ export default {
                 for (let cost in costs) {
                     let c = costs[cost]
                     switch (c.Type) {
-                        case "money":
+                        case 'money':
                             if (player.Economy.Money < c.Value) {
                                 return false
                             } else {
                                 return true
                             }
-                        case "science":
+                        case 'science':
                             if (player.Civilian.NbResearchPoint < c.Value) {
                                 return false
                             } else {
                                 return true
                             }
-                        case "manpower":
+                        case 'manpower':
                             if (player.Civilian.NbManpower < c.Value) {
                                 return false
                             } else {
                                 return true
                             }
-                        case "morale":
+                        case 'morale':
                             if (player.Army.Morale < c.Value) {
                                 return false
                             } else {
@@ -198,19 +205,19 @@ export default {
             for (let c in constraints) {
                 let t = constraints[c]
                 if (
-                    t.Type == "tech" &&
+                    t.Type == 'tech' &&
                     ((player.Technologies &&
                         player.Technologies.indexOf(t.Value) === -1) ||
                         !player.Technologies)
                 ) {
                     return false
-                } else if (t.Type == "turn") {
+                } else if (t.Type == 'turn') {
                     return CheckOperator(t.Value, t.Operator, game.CurrentTurn)
-                } else if (t.Type == "isWar" && !game.IsWar) {
+                } else if (t.Type == 'isWar' && !game.IsWar) {
                     return false
-                } else if (t.Type == "isNotWar" && game.IsWar) {
+                } else if (t.Type == 'isNotWar' && game.IsWar) {
                     return false
-                } else if (t.Type == "Modifier") {
+                } else if (t.Type == 'Modifier') {
                     for (key in player.Modifiers) {
                         if (key == t.Key) {
                             return CheckOperator(
@@ -221,7 +228,7 @@ export default {
                         }
                     }
                     return false
-                } else if (t.Type == "ModifierTurn") {
+                } else if (t.Type == 'ModifierTurn') {
                     for (key in player.Modifiers) {
                         if (key == t.Key) {
                             return CheckOperator(
@@ -238,11 +245,11 @@ export default {
         },
         CheckOperator(a, op, b) {
             switch (op) {
-                case ">":
+                case '>':
                     return a > b
-                case "<":
+                case '<':
                     return a < b
-                case "=":
+                case '=':
                     return a == b
             }
             return false
@@ -252,7 +259,7 @@ export default {
         },
         sendNewAction(action, cd, value = -1999) {
             axios
-                .post("http://localhost:8081/Actions", {
+                .post('http://localhost:8081/Actions', {
                     ID: action,
                     Value: value,
                     PlayerID: this.$store.state.playerProfile.ID,
@@ -260,8 +267,6 @@ export default {
                 })
                 .then(
                     function(response) {
-                        console.log(this.$store.state.currentGame.CurrentTurn)
-                        console.log(cd)
                         Vue.set(
                             this.actionUsed,
                             action,

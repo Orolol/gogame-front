@@ -3,61 +3,91 @@
     <div class="eco-policies policies">
         <div class="army-panel">
           <div v-for="v, k in ecoPolicies" >
-            <span>{{v.Name}}</span>
-            <select v-model="v.DefaultValue" @change="sendNewPolicy(v.ActionName, $event)" class="select-policy">
-              <option v-for="(elem, key) in v.PossibleValue2" v-bind:value="elem.Value">{{elem.Name}}</option>
+            <span>{{v.Name}} aa1 {{currentPoliciesValue[v]}} aa {{v.ActionName}} {{currentPoliciesValue}}</span>
+            <select v-model="cmpPolicyValue[v]" @change="sendNewPolicy(v.ActionName, $event)" class="select-policy">
+              <option v-for="(elem, key) in v.PossibleValue2" :value="elem.Value" >{{elem.Name}}</option>
             </select>
          </div>
         </div>
     </div>
-    <div class="mil-policies policies">
+    <!-- <div class="mil-policies policies">
         <div class="army-panel">
           <div v-for="v, k in milPolicies" >
             <span>{{v.Name}}</span>
-            <select v-model="v.DefaultValue" @change="sendNewPolicy(v.ActionName , $event)"  class="select-policy">
+            <select v-model="cmpPolicyValue[v]" @change="sendNewPolicy(v.ActionName , $event)"  class="select-policy">
               <option v-for="(elem, key) in v.PossibleValue2" v-bind:value="elem.Value">{{elem.Name}}</option>
             </select>
           </div>
         </div>
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script>
-import axios from "axios"
+import axios from 'axios'
 export default {
-    props: ["propsPolicies"],
+    props: ['propsPolicies'],
+    data() {
+        return {
+            currentPoliciesValue: {}
+        }
+    },
     computed: {
         ecoPolicies: function() {
             return this.propsPolicies
         },
-        milPolicies: function() {
-            return this.$store.state.milPolicies
+
+        cmpBoardValues() {
+            return this.$store.state.myBoard
+        },
+        cmpPolicyValue() {
+            console.log(this.cmpBoardValues)
+            console.log(this.currentPoliciesValue)
+            for (let pol in this.propsPolicies) {
+                let p = this.propsPolicies[pol]
+                if (p.PossibleValue2[0].Effects[0].ModifierType == 'Policy') {
+                    this.currentPoliciesValue[p.ActionName] = String(
+                        this.cmpBoardValues.ModifierPolicy[
+                            p.PossibleValue2[0].Effects[0].ModifierName
+                        ]
+                    )
+                } else if (
+                    p.PossibleValue2[0].Effects[0].ModifierType == 'Economy'
+                ) {
+                    this.currentPoliciesValue[
+                        p.ActionName
+                    ] = this.cmpBoardValues.Economy[
+                        p.PossibleValue2[0].Effects[0].ModifierName
+                    ]
+                }
+            }
+            console.log(this.currentPoliciesValue)
+            return this.currentPoliciesValue
         }
     },
     mounted() {
-        for (let i in this.$store.state.myBoard.Policies) {
-            for (let j in this.$store.state.ecoPolicies) {
-                if (
-                    this.$store.state.ecoPolicies[j].ActionName ==
-                    this.$store.state.myBoard.Policies[i].ActionName
-                ) {
-                    this.$store.state.ecoPolicies[j].DefaultValue = Number(
-                        this.$store.state.myBoard.Policies[i].Value
-                    )
-                }
-            }
-            for (let j in this.$store.state.milPolicies) {
-                if (
-                    this.$store.state.milPolicies[j].ActionName ==
-                    this.$store.state.myBoard.Policies[i].ActionName
-                ) {
-                    this.$store.state.milPolicies[j].DefaultValue = Number(
-                        this.$store.state.myBoard.Policies[i].Value
-                    )
-                }
-            }
-        }
+        // for (let i in this.$store.state.myBoard.Policies) {
+        //     for (let j in this.$store.state.ecoPolicies) {
+        //         if (
+        //             this.$store.state.ecoPolicies[j].ActionName ==
+        //             this.$store.state.myBoard.Policies[i].ActionName
+        //         ) {
+        //             this.$store.state.ecoPolicies[j].DefaultValue = Number(
+        //                 this.$store.state.myBoard.Policies[i].Value
+        //             )
+        //         }
+        //     }
+        //     for (let j in this.$store.state.milPolicies) {
+        //         if (
+        //             this.$store.state.milPolicies[j].ActionName ==
+        //             this.$store.state.myBoard.Policies[i].ActionName
+        //         ) {
+        //             this.$store.state.milPolicies[j].DefaultValue = Number(
+        //                 this.$store.state.myBoard.Policies[i].Value
+        //             )
+        //         }
+        //     }
+        // }
     },
     methods: {
         jsonParse(jsonList) {
@@ -66,7 +96,7 @@ export default {
         sendNewPolicy(policy, event) {
             console.log(policy, event)
             axios
-                .post("http://localhost:8081/ChangePolicy", {
+                .post('http://localhost:8081/ChangePolicy', {
                     ID: policy,
                     Value: Number(event.target.value),
                     PlayerID: this.$store.state.playerProfile.ID,
@@ -76,6 +106,17 @@ export default {
                 .catch(function(error) {
                     console.log(error)
                 })
+        },
+        getPolicyValue(p) {
+            if (p.PossibleValue2.Effects[0].ModifierType == 'Policy') {
+                return cmpBoardValues.ModifierPolicy[
+                    p.PossibleValue2.Effects[0].ModifierName
+                ]
+            } else if (p.PossibleValue2.Effects[0].ModifierType == 'Economy') {
+                return cmpBoardValues.Economy[
+                    p.PossibleValue2.Effects[0].ModifierName
+                ]
+            }
         }
     }
 }
