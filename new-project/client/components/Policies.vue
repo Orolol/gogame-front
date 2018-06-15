@@ -86,7 +86,7 @@ export default {
         sendNewPolicy(policy, event) {
             console.log(policy, event)
             axios
-                .post('http://localhost:8081/ChangePolicy', {
+                .post('http://0r0.fr:8081/ChangePolicy', {
                     ID: policy,
                     Value: Number(event.target.value),
                     PlayerID: this.$store.state.playerProfile.ID,

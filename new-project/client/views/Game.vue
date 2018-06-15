@@ -11,7 +11,7 @@
                 Looking for an opponent
             </div>
         </div>
-        <gameBoard ></gameBoard>
+        <gameBoard></gameBoard>
     </div>
 </template>
 
@@ -45,7 +45,7 @@ export default {
         JoinGame() {
             this.status = 'pending'
             axios
-                .post('http://localhost:8081/JoinGame', {
+                .post('http://0r0.fr:8081/JoinGame', {
                     ID: this.profile.ID
                 })
                 .then(
