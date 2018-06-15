@@ -1,16 +1,16 @@
 <template>
-  <div class="policies">
-    <div class="eco-policies policies">
-        <div class="army-panel">
-          <div v-for="v, k in ecoPolicies" >
-            <span>{{v.Name}} aa1 {{currentPoliciesValue[v]}} aa {{v.ActionName}} {{currentPoliciesValue}}</span>
-            <select v-model="cmpPolicyValue[v]" @change="sendNewPolicy(v.ActionName, $event)" class="select-policy">
-              <option v-for="(elem, key) in v.PossibleValue2" :value="elem.Value" >{{elem.Name}}</option>
-            </select>
-         </div>
+    <div class="policies">
+        <div class="eco-policies policies">
+            <div class="army-panel">
+                <div v-for="v, k in ecoPolicies">
+                    <span>{{v.Name}}</span>
+                    <select v-model="cmpPolicyValue[v.ActionName]" @change="sendNewPolicy(v.ActionName, $event)" class="select-policy">
+                        <option v-for="(elem, key) in v.PossibleValue2" :value="elem.Value">{{elem.Name}}</option>
+                    </select>
+                </div>
+            </div>
         </div>
-    </div>
-    <!-- <div class="mil-policies policies">
+        <!-- <div class="mil-policies policies">
         <div class="army-panel">
           <div v-for="v, k in milPolicies" >
             <span>{{v.Name}}</span>
@@ -20,7 +20,7 @@
           </div>
         </div>
     </div> -->
-  </div>
+    </div>
 </template>
 
 <script>
@@ -46,19 +46,9 @@ export default {
             for (let pol in this.propsPolicies) {
                 let p = this.propsPolicies[pol]
                 if (p.PossibleValue2[0].Effects[0].ModifierType == 'Policy') {
-                    this.currentPoliciesValue[p.ActionName] = String(
-                        this.cmpBoardValues.ModifierPolicy[
-                            p.PossibleValue2[0].Effects[0].ModifierName
-                        ]
-                    )
-                } else if (
-                    p.PossibleValue2[0].Effects[0].ModifierType == 'Economy'
-                ) {
-                    this.currentPoliciesValue[
-                        p.ActionName
-                    ] = this.cmpBoardValues.Economy[
-                        p.PossibleValue2[0].Effects[0].ModifierName
-                    ]
+                    this.currentPoliciesValue[p.ActionName] = String(this.cmpBoardValues.ModifierPolicy[p.PossibleValue2[0].Effects[0].ModifierName])
+                } else if (p.PossibleValue2[0].Effects[0].ModifierType == 'Economy') {
+                    this.currentPoliciesValue[p.ActionName] = this.cmpBoardValues.Economy[p.PossibleValue2[0].Effects[0].ModifierName]
                 }
             }
             console.log(this.currentPoliciesValue)
@@ -109,13 +99,9 @@ export default {
         },
         getPolicyValue(p) {
             if (p.PossibleValue2.Effects[0].ModifierType == 'Policy') {
-                return cmpBoardValues.ModifierPolicy[
-                    p.PossibleValue2.Effects[0].ModifierName
-                ]
+                return cmpBoardValues.ModifierPolicy[p.PossibleValue2.Effects[0].ModifierName]
             } else if (p.PossibleValue2.Effects[0].ModifierType == 'Economy') {
-                return cmpBoardValues.Economy[
-                    p.PossibleValue2.Effects[0].ModifierName
-                ]
+                return cmpBoardValues.Economy[p.PossibleValue2.Effects[0].ModifierName]
             }
         }
     }

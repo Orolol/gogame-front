@@ -38,16 +38,10 @@
         <div class="army-panel">
           <div v-for="v, k in myBoard.Economy" >
               <label>{{k}}</label>
-              <span>{{v | number2digits}}</span>
-          </div>
-        </div>
-        <br>
-        <div class="army-panel">
-          <div v-for="v, k in myBoard.Civilian" >
-              <label>{{k}}</label>
               <span>{{v | number0digits}}</span>
           </div>
         </div>
+        <br>
         <br>
 
 
@@ -72,6 +66,13 @@
         
         
     <div class="decision-panel decision-panel-side" v-if="hisBoard">
+        <div class="army-panel">
+          <div v-for="v, k in hisBoard.Territory" >
+              <label>{{k}}</label>
+              <span>{{nFormatter(v, 2)}}</span>
+          </div>
+        </div>
+        <br>
         <div class="army-panel">
           <div v-for="v, k in hisBoard.Army" >
               <label>{{k}}</label>
@@ -112,14 +113,9 @@ export default {
     computed: {
         myBoard: function() {
             for (let player in this.currentGame['ListPlayers']) {
-                if (
-                    this.currentGame['ListPlayers'][player]['PlayerID'] ==
-                    this.$store.state.playerProfile.ID
-                ) {
-                    this.$store.commit(
-                        'LOAD_BOARD',
-                        this.currentGame['ListPlayers'][player]
-                    )
+                if (this.currentGame['ListPlayers'][player]['PlayerID'] == this.$store.state.playerProfile.ID) {
+                    this.$store.commit('LOAD_BOARD', this.currentGame['ListPlayers'][player])
+
                     return this.currentGame['ListPlayers'][player]
                 }
             }
@@ -132,10 +128,7 @@ export default {
         },
         hisBoard() {
             for (let player in this.currentGame['ListPlayers']) {
-                if (
-                    this.currentGame['ListPlayers'][player]['PlayerID'] !=
-                    this.$store.state.playerProfile.ID
-                ) {
+                if (this.currentGame['ListPlayers'][player]['PlayerID'] != this.$store.state.playerProfile.ID) {
                     return this.currentGame['ListPlayers'][player]
                 }
             }
@@ -158,10 +151,7 @@ export default {
                 i
             for (i = 0; i < si.length; i++) {
                 if (num >= si[i].value) {
-                    return (
-                        (num / si[i].value).toFixed(digits).replace(rx, '$1') +
-                        si[i].symbol
-                    )
+                    return (num / si[i].value).toFixed(digits).replace(rx, '$1') + si[i].symbol
                 }
             }
             return num.toFixed(digits).replace(rx, '$1')

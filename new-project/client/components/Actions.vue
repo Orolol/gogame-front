@@ -1,29 +1,20 @@
 <template>
     <div class="actions">
-        <div v-for="v, k  in actions" >
+        <div v-for="v, k  in actions">
             <div v-if="v.Selector == 'fixed'">
-              <button   class="button" :disabled="!actionUsedCheck(v.ActionName) || !v.isCostOk"
-                    @click="sendNewAction(v.ActionName, v.Cooldown)">{{v.Name}}</button>
-              <br>
-              <span class="description">{{v.Description}}</span>
-              <span v-if="!actionUsedCheck(v.ActionName)">{{ actionUsed[v.ActionName] - $store.state.currentGame.CurrentTurn}}</span>
+                <button class="button" :disabled="!actionUsedCheck(v.ActionName) || !v.isCostOk" @click="sendNewAction(v.ActionName, v.Cooldown)">{{v.Name}}</button>
+                <br>
+                <span class="description">{{v.Description}}</span>
+                <span v-if="!actionUsedCheck(v.ActionName)">{{ actionUsed[v.ActionName] - $store.state.currentGame.CurrentTurn}}</span>
             </div>
-          <div v-if="v.Selector == 'range'">
-              <span class="description">{{v.ActionName}} {{cmpBoardValues[v.Effects[0].ModifierType][v.Effects[0].ModifierName]}} / {{maxSlider(v.Constraints[2].Value,cmpBoardValues[v.Effects[0].ModifierType][v.Effects[0].ModifierName])}}</span>
-            <vue-slider 
-              ref="slider"
-              v-model="cmpBoardValues[v.Effects[0].ModifierType][v.Effects[0].ModifierName]" 
-              :clickable="false"
-              :disabled="!actionUsedCheck(v.ActionName)"
-              :tooltip= "'hover'"
-              :min="parseInt(v.Constraints[0].Value)"
-              :max="maxSlider(v.Constraints[2].Value,cmpBoardValues[v.Effects[0].ModifierType][v.Effects[0].ModifierName]) "
-              @drag-end="sendNewAction(v.ActionName, v.Cooldown,cmpBoardValues[v.Effects[0].ModifierType][v.Effects[0].ModifierName] )"></vue-slider>
-            <br>
-            <!-- <span v-if="!actionUsedCheck(v.ActionName)">{{ actionUsed[v.ActionName] - $store.state.currentGame.CurrentTurn}}</span> -->
-          </div>
-          
-          
+
+            <div v-if="v.Selector == 'range'">
+                <span class="description">{{v.ActionName}} {{cmpBoardValues[v.Effects[0].ModifierType][v.Effects[0].ModifierName]}} / {{maxSlider(v.Constraints[2].Value,cmpBoardValues[v.Effects[0].ModifierType][v.Effects[0].ModifierName])}}</span>
+                <vue-slider ref="slider" v-model="cmpBoardValues[v.Effects[0].ModifierType][v.Effects[0].ModifierName]" :clickable="false" :disabled="!actionUsedCheck(v.ActionName)" :tooltip="'hover'" :min="parseInt(v.Constraints[0].Value)" :max="maxSlider(v.Constraints[2].Value,cmpBoardValues[v.Effects[0].ModifierType][v.Effects[0].ModifierName]) " @drag-end="sendNewAction(v.ActionName, v.Cooldown,cmpBoardValues[v.Effects[0].ModifierType][v.Effects[0].ModifierName] )"></vue-slider>
+                <br>
+                <!-- <span v-if="!actionUsedCheck(v.ActionName)">{{ actionUsed[v.ActionName] - $store.state.currentGame.CurrentTurn}}</span> -->
+            </div>
+
         </div>
     </div>
 </template>
@@ -94,22 +85,14 @@ export default {
                 let isLinked = false
                 for (let c in this.actions[a].Constraints) {
                     if (this.actions[a].Constraints[c].Type == 'linked') {
-                        if (
-                            !totalLinkedValues[
-                                this.actions[a].Constraints[c].Value
+                        if (!totalLinkedValues[this.actions[a].Constraints[c].Value]) {
+                            totalLinkedValues[this.actions[a].Constraints[c].Value] = this.cmpBoardValues[this.actions[a].Effects[0].ModifierType][
+                                this.actions[a].Effects[0].ModifierName
                             ]
-                        ) {
-                            totalLinkedValues[
-                                this.actions[a].Constraints[c].Value
-                            ] = this.cmpBoardValues[
-                                this.actions[a].Effects[0].ModifierType
-                            ][this.actions[a].Effects[0].ModifierName]
                         } else {
-                            totalLinkedValues[
-                                this.actions[a].Constraints[c].Value
-                            ] += this.cmpBoardValues[
-                                this.actions[a].Effects[0].ModifierType
-                            ][this.actions[a].Effects[0].ModifierName]
+                            totalLinkedValues[this.actions[a].Constraints[c].Value] += this.cmpBoardValues[this.actions[a].Effects[0].ModifierType][
+                                this.actions[a].Effects[0].ModifierName
+                            ]
                         }
                     }
                 }
@@ -154,10 +137,7 @@ export default {
             return JSON.parse(jsonList)
         },
         actionUsedCheck: function(id) {
-            return (
-                !this.actionUsed[id] ||
-                this.actionUsed[id] < this.$store.state.currentGame.CurrentTurn
-            )
+            return !this.actionUsed[id] || this.actionUsed[id] < this.$store.state.currentGame.CurrentTurn
         },
         checkCosts(costs) {
             let player = this.$store.state.myBoard
@@ -204,12 +184,7 @@ export default {
             let game = this.$store.state.currentGame
             for (let c in constraints) {
                 let t = constraints[c]
-                if (
-                    t.Type == 'tech' &&
-                    ((player.Technologies &&
-                        player.Technologies.indexOf(t.Value) === -1) ||
-                        !player.Technologies)
-                ) {
+                if (t.Type == 'tech' && ((player.Technologies && player.Technologies.indexOf(t.Value) === -1) || !player.Technologies)) {
                     return false
                 } else if (t.Type == 'turn') {
                     return CheckOperator(t.Value, t.Operator, game.CurrentTurn)
@@ -220,22 +195,14 @@ export default {
                 } else if (t.Type == 'Modifier') {
                     for (key in player.Modifiers) {
                         if (key == t.Key) {
-                            return CheckOperator(
-                                ft.Value,
-                                t.Operator,
-                                player.Modifiers[key]
-                            )
+                            return CheckOperator(ft.Value, t.Operator, player.Modifiers[key])
                         }
                     }
                     return false
                 } else if (t.Type == 'ModifierTurn') {
                     for (key in player.Modifiers) {
                         if (key == t.Key) {
-                            return CheckOperator(
-                                player.Modifiers[key],
-                                t.Operator,
-                                game.CurrentTurn
-                            )
+                            return CheckOperator(player.Modifiers[key], t.Operator, game.CurrentTurn)
                         }
                     }
                     return false
@@ -267,11 +234,7 @@ export default {
                 })
                 .then(
                     function(response) {
-                        Vue.set(
-                            this.actionUsed,
-                            action,
-                            cd + this.$store.state.currentGame.CurrentTurn
-                        )
+                        Vue.set(this.actionUsed, action, cd + this.$store.state.currentGame.CurrentTurn)
                     }.bind(this)
                 )
                 .catch(function(error) {

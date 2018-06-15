@@ -1,25 +1,28 @@
 <template>
     <div class="gameLobby qpage">
-      <div v-if="status == 'off'">
-        <button class="button" @click="JoinGame">Join PVP Game</button>
-        <button class="button">Join AI Game</button>
-      </div>
-      <div v-if="status == 'pending'">
-        Looking for an opponent
-      </div>
-      <gameBoard ></gameBoard>
+        <div class="playerSmallProfile">
+            <p>{{profile.Name}}</p>
+            <p>ELO : {{profile.ELO}}</p>
+            <div v-if="status == 'off' || this.currentGame.State == 'End'">
+                <button class="button" @click="JoinGame">Join PVP Game</button>
+                <button class="button">Join AI Game</button>
+            </div>
+            <div v-if="status == 'pending'">
+                Looking for an opponent
+            </div>
+        </div>
+        <gameBoard ></gameBoard>
     </div>
 </template>
 
 <script>
-import gameBoard from "../components/GameBoard"
-import axios from "axios"
+import gameBoard from '../components/GameBoard'
+import axios from 'axios'
 export default {
-    name: "Game",
+    name: 'Game',
     data() {
         return {
-            status: "off",
-            profile: this.$store.state.playerProfile
+            status: 'off'
         }
     },
     components: {
@@ -28,14 +31,21 @@ export default {
     computed: {
         currentGame() {
             return this.$store.state.currentGame
+        },
+        profile() {
+            return this.$store.state.playerProfile
         }
     },
-    created() {},
+    created() {
+        if (!this.$store.state.token) {
+            this.$router.push('Login')
+        }
+    },
     methods: {
         JoinGame() {
-            this.status = "pending"
+            this.status = 'pending'
             axios
-                .post("http://localhost:8081/JoinGame", {
+                .post('http://localhost:8081/JoinGame', {
                     ID: this.profile.ID
                 })
                 .then(
@@ -43,21 +53,16 @@ export default {
                         let cats = {}
                         for (let i in response.data.policies) {
                             let pl = response.data.policies[i]
-                            console.log(pl)
                             if (!cats[pl.TypePolicy]) {
                                 cats[pl.TypePolicy] = {}
-                                console.log(1)
                             }
                             if (!cats[pl.TypePolicy][pl.SubType]) {
                                 cats[pl.TypePolicy][pl.SubType] = {}
-                                console.log(2)
                             }
-                            if (!cats[pl.TypePolicy][pl.SubType]["policies"]) {
-                                cats[pl.TypePolicy][pl.SubType]["policies"] = []
-                                console.log(3)
+                            if (!cats[pl.TypePolicy][pl.SubType]['policies']) {
+                                cats[pl.TypePolicy][pl.SubType]['policies'] = []
                             }
-                            cats[pl.TypePolicy][pl.SubType]["policies"].push(pl)
-                            console.log(4)
+                            cats[pl.TypePolicy][pl.SubType]['policies'].push(pl)
                         }
                         for (let i in response.data.actions) {
                             let pl = response.data.actions[i]
@@ -68,29 +73,16 @@ export default {
                             if (!cats[pl.Type][pl.SubType]) {
                                 cats[pl.Type][pl.SubType] = {}
                             }
-                            if (!cats[pl.Type][pl.SubType]["actions"]) {
-                                cats[pl.Type][pl.SubType]["actions"] = []
+                            if (!cats[pl.Type][pl.SubType]['actions']) {
+                                cats[pl.Type][pl.SubType]['actions'] = []
                             }
-                            cats[pl.Type][pl.SubType]["actions"].push(pl)
+                            cats[pl.Type][pl.SubType]['actions'].push(pl)
                         }
-
-                        console.log(cats)
-
-                        this.$store.commit("LOAD_BOARD_NEW", cats)
-
-                        this.$store.commit(
-                            "LOAD_POLICIES",
-                            response.data.policies
-                        )
-                        this.$store.commit(
-                            "LOAD_ACTIONS",
-                            response.data.actions
-                        )
-                        this.$store.commit(
-                            "LOAD_TECH",
-                            response.data.technology
-                        )
-                        this.$store.commit("LOAD_EVENTS", response.data.events)
+                        this.$store.commit('LOAD_BOARD_NEW', cats)
+                        this.$store.commit('LOAD_POLICIES', response.data.policies)
+                        this.$store.commit('LOAD_ACTIONS', response.data.actions)
+                        this.$store.commit('LOAD_TECH', response.data.technology)
+                        this.$store.commit('LOAD_EVENTS', response.data.events)
                     }.bind(this)
                 )
                 .catch(function(error) {
@@ -99,37 +91,31 @@ export default {
             this.initSocket()
         },
         initSocket() {
-            if (window["WebSocket"] && this.$store.state.playerProfile) {
-                this.conn = new WebSocket(
-                    "ws://localhost:5001/ws?id=" +
-                        this.$store.state.playerProfile.ID
-                )
-                console.log("CONNECTED")
+            if (window['WebSocket'] && this.$store.state.playerProfile) {
+                this.conn = new WebSocket('ws://localhost:5001/ws?id=' + this.$store.state.playerProfile.ID)
+                console.log('CONNECTED')
                 this.conn.onclose = function(evt) {
-                    console.log("DC")
+                    console.log('DC')
                     this.conn = false
                     // clearInterval(time);
                 }.bind(this)
                 this.conn.onmessage = function(evt) {
-                    this.status = "playing"
-                    var messages = evt.data.split("\n")
+                    this.status = 'playing'
+                    var messages = evt.data.split('\n')
                     for (var i = 0; i < messages.length; i++) {
                         if (messages[i] != '"pong"') {
-                            this.$store.commit(
-                                "LOAD_GAME",
-                                JSON.parse(messages[i])
-                            )
-                            if (this.$store.state.currentGame.State == "END") {
-                                console.log("END GAME ! ")
+                            this.$store.commit('LOAD_GAME', JSON.parse(messages[i]))
+                            if (this.$store.state.currentGame.State == 'END') {
+                                console.log('END GAME ! ')
                                 this.conn.close()
                             }
                         } else {
-                            console.log("ECV PONG")
+                            console.log('ECV PONG')
                         }
                     }
                 }.bind(this)
             } else {
-                console.log("No web socket :(")
+                console.log('No web socket :(')
             }
         }
     }
@@ -156,5 +142,10 @@ export default {
 .qpage {
     display: flex;
     height: 80vh;
+}
+
+.playerSmallProfile {
+    position: fixed;
+    z-index: 99;
 }
 </style>
