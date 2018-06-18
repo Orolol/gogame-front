@@ -45,7 +45,7 @@ export default {
             console.log('Try to Login ', this.login, ' / ', this.password)
             console.log('SEND POST')
             axios
-                .post('http://0r0.fr:8081/SignUp', {
+                .post('http://localhost:8081/SignUp', {
                     login: this.login,
                     password: this.password,
                     name: this.name

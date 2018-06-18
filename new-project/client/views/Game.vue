@@ -45,7 +45,7 @@ export default {
         JoinGame() {
             this.status = 'pending'
             axios
-                .post('http://0r0.fr:8081/JoinGame', {
+                .post('http://localhost:8081/JoinGame', {
                     ID: this.profile.ID
                 })
                 .then(

@@ -7,6 +7,7 @@
 
 <script>
 import topMenu from './TopMenu'
+import axios from 'axios'
 export default {
     components: {
         topMenu
@@ -16,6 +17,18 @@ export default {
         if (!this.$store.state.token) {
             this.$router.push('Login')
         }
+        console.log('eee')
+        axios.post("http://localhost:8081/GetTranslations", {
+                language: "en"
+            }).then(function(data) {
+            console.log(data)
+            for(let d in data.data)
+             this.$store.commit('LOAD_TRANSLATIONS', {
+                        name: data.data[d].ActionName,
+                        value: data.data[d]
+                    })
+        }.bind(this))
+        
     }
 }
 </script>

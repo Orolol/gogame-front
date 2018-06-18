@@ -36,7 +36,7 @@ export default {
             console.log('Try to Login ', this.login, ' / ', this.password)
             console.log('SEND POST')
             axios
-                .post('http://0r0.fr:8081/Login', {
+                .post('http://localhost:8081/Login', {
                     login: this.login,
                     password: this.password
                 })

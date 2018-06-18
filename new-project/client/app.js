@@ -15,6 +15,15 @@ const app = new Vue({
   ...App
 })
 
+Vue.filter("getTranslationShortName", function (actionName) {
+  if (store.state.translations[actionName]) {
+    return store.state.translations[actionName].ShortName
+  } else {
+    return actionName
+  }
+  
+})
+
 
 Vue.filter("number2digits", function (num) {
   let digits = 2

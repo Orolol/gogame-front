@@ -226,7 +226,7 @@ export default {
         },
         sendNewAction(action, cd, value = -1999) {
             axios
-                .post('http://0r0.fr:8081/Actions', {
+                .post('http://localhost:8081/Actions', {
                     ID: action,
                     Value: value,
                     PlayerID: this.$store.state.playerProfile.ID,

@@ -30,7 +30,7 @@
         <br>
         <div class="army-panel">
           <div v-for="v, k in myBoard.Army" >
-              <label>{{k}}</label>
+              <label>{{k | getTranslationShortName}}</label>
               <span>{{v | number0digits}}</span>
           </div>
         </div>

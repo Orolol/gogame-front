@@ -15,6 +15,7 @@ const state = {
   board: {},
   events: {},
   rangeValues: {},
+  translations: {},
 }
 
 const mutations = {
@@ -29,6 +30,9 @@ const mutations = {
   },
   LOAD_RANGE_VALUES(state, payload) {
     state.rangeValues[payload.name] = payload.value
+  },
+  LOAD_TRANSLATIONS(state, payload) {
+    state.translations[payload.name] = payload.value
   },
   LOAD_POLICIES(state, payload) {
     state.ecoPolicies = []

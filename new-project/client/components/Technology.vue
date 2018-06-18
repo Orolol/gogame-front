@@ -166,7 +166,7 @@ export default {
         },
         sendGetTech(tech) {
             axios
-                .post('http://0r0.fr:8081/GetTechnology', {
+                .post('http://localhost:8081/GetTechnology', {
                     ID: tech,
                     Value: 1,
                     PlayerID: this.$store.state.playerProfile.ID,
