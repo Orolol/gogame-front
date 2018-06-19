@@ -38,6 +38,11 @@ export default {
                         })
                 }.bind(this)
             )
+        axios.post(baseUrl + '/GetInfos').then(
+            function(data) {
+                this.$store.commit('LOAD_INFOS', data.data)
+            }.bind(this)
+        )
     }
 }
 </script>

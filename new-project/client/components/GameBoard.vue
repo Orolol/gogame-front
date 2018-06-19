@@ -19,74 +19,16 @@
         </div>
         <div class="decisionBoard">
             <div class="decision-panel decision-panel-side" v-if="myBoard">
-
-                <div class="army-panel">
-                    <div v-for="v, k in myBoard.Territory">
-                        <label>{{k}}</label>
-                        <span>{{v | number0digits}}</span>
-                    </div>
-                </div>
-                <br>
-                <div class="army-panel">
-                    <div v-for="v, k in myBoard.Army">
-                        <label>{{k | getTranslationShortName}}</label>
-                        <span>{{v | number0digits}}</span>
-                    </div>
-                </div>
-                <br>
-                <div class="army-panel">
-                    <div v-for="v, k in myBoard.Economy">
-                        <label>{{k}}</label>
-                        <span>{{v | number0digits}}</span>
-                    </div>
-                </div>
-                <br>
-                <br>
-
-                <div class="pop-panel">
-                </div>
-
-            </div>
-
-            <div class="decision-panel decision-panel-main">
-                <div class="choose-decision-panel">
-                    <button v-for="c, k in categories" class="button" @click="switchPanel(k)" :class="{'button-active': currentDecisionPanel == k}"> {{k}} </button>
-                    <button class="button" @click="switchPanel('teconology')" :class="{'button-active': currentDecisionPanel == 'teconology'}"> TECHNOLOGIES </button>
-                </div>
-
-                <technology v-if="myBoard && currentDecisionPanel=='teconology'"></technology>
-                <category v-for="c, k in categories" :category="k" v-if="myBoard && currentDecisionPanel==k" :subs="c"></category>
-
-            </div>
-
-        </div>
-        <div class="decisionBoard">
-            <div class="decision-panel decision-panel-side" v-if="myBoard">
                 <span class="panel-title">INFOS</span>
                 <div class="army-panel">
-                    <div v-for="v, k in myBoard.Territory">
-                        <label>{{k}}</label>
-                        <span>{{v | number0digits}}</span>
+                    <div v-for="v, k in myInfos.generalInfos" v-if="v.Type != 'Separator'">
+                        <label>{{v.Name | getTranslationShortName}}</label>
+                        <span :class="{'lowAlert': v.LowAlert && v.Value < v.LowAlert , 'veryLowAlert': v.VeryLowAlert && v.Value < v.VeryLowAlert}">{{v.Value | number2digits}}</span>
                     </div>
-                </div>
-                <br>
-                <div class="army-panel">
-                    <div v-for="v, k in myBoard.Army">
-                        <label>{{k}}</label>
-                        <span>{{v | number2digits}}</span>
+                    <div v-else>
+                        <label>&nbsp </label>
+                        <span> </span>
                     </div>
-                </div>
-                <br>
-                <div class="army-panel">
-                    <div v-for="v, k in myBoard.Economy">
-                        <label>{{k}}</label>
-                        <span>{{v | number2digits}}</span>
-                    </div>
-                </div>
-                <br>
-                <br>
-
-                <div class="pop-panel">
                 </div>
 
             </div>
@@ -99,23 +41,20 @@
                 </div>
 
                 <technology v-if="myBoard && currentDecisionPanel=='teconology'"></technology>
-                <category v-for="c, k in categories" :category="k" v-if="myBoard && currentDecisionPanel==k" :subs="c"></category>
+                <category v-for="c, k in categories" :key="k" :category="k" v-if="myBoard && currentDecisionPanel==k" :subs="c"></category>
 
             </div>
 
             <div class="decision-panel decision-panel-side" v-if="hisBoard">
-                <span class="panel-title">ENEMY</span>
+                <span class="panel-title">ENEMY | {{hisBoard.Nick}}</span>
                 <div class="army-panel">
-                    <div v-for="v, k in hisBoard.Territory">
-                        <label>{{k}}</label>
-                        <span>{{nFormatter(v, 2)}}</span>
+                    <div v-for="v, k in hisInfos.generalInfos" v-if="v.Type != 'Separator'">
+                        <label>{{v.Name | getTranslationShortName}}</label>
+                        <span :class="{'lowAlert': v.LowAlert && v.Value < v.LowAlert , 'veryLowAlert': v.VeryLowAlert && v.Value < v.VeryLowAlert}">{{v.Value | number2digits}}</span>
                     </div>
-                </div>
-                <br>
-                <div class="army-panel">
-                    <div v-for="v, k in hisBoard.Army">
-                        <label>{{k}}</label>
-                        <span>{{nFormatter(v, 2)}}</span>
+                    <div v-else>
+                        <label>&nbsp </label>
+                        <span> </span>
                     </div>
                 </div>
 
@@ -160,6 +99,41 @@ export default {
                 }
             }
         },
+        myInfos() {
+            let ret = {}
+            console.log(this.$store.state.infos[0].Infos)
+            if (!ret[this.$store.state.infos[0].Category]) {
+                ret[this.$store.state.infos[0].Category] = []
+            }
+            for (let i in this.$store.state.infos[0].Infos) {
+                let inf = this.$store.state.infos[0].Infos[i]
+                if (inf.Type != 'Separator') {
+                    inf.Value = this.myBoard[inf.Type][inf.Name]
+                } else {
+                    inf.Value = 0
+                }
+                ret[this.$store.state.infos[0].Category].push(inf)
+            }
+            return ret
+        },
+        hisInfos() {
+            let ret = {}
+            console.log(this.$store.state.infos[0].Infos)
+            if (!ret[this.$store.state.infos[0].Category]) {
+                ret[this.$store.state.infos[0].Category] = []
+            }
+            for (let i in this.$store.state.infos[0].Infos) {
+                let inf = this.$store.state.infos[0].Infos[i]
+                if (inf.Type != 'Separator') {
+                    inf.Value = this.hisBoard[inf.Type][inf.Name]
+                } else {
+                    inf.Value = 0
+                }
+                ret[this.$store.state.infos[0].Category].push(inf)
+            }
+            return ret
+        },
+
         categories() {
             return this.$store.state.board
         },
@@ -220,18 +194,28 @@ export default {
     margin: 15px;
 }
 
+.lowAlert {
+    color: darkorange;
+    font-weight: 600;
+}
+
+.veryLowAlert {
+    color: red;
+    font-weight: 600;
+}
+
 .myBoard {
     text-align: left;
     position: absolute;
     left: 50px;
-    font-size: 14px;
+    font-size: 0.9vw;
     box-shadow: 5px 0 12px #d8d8d8;
 }
 .hisBoard {
     text-align: right;
     position: absolute;
     right: 50px;
-    font-size: 14px;
+    font-size: 0.9vw;
     box-shadow: 0 5px 12px #d8d8d8;
 }
 
@@ -241,6 +225,7 @@ export default {
     width: 100%;
     height: 100%;
     display: flex;
+    font-size: 1.1vw;
 }
 
 .game-wrapper {

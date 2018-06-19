@@ -4,7 +4,7 @@ import Vuex from 'vuex'
 Vue.use(Vuex)
 
 const state = {
-  token: "",
+  token: '',
   playerProfile: {},
   currentGame: {},
   ecoPolicies: [],
@@ -13,9 +13,10 @@ const state = {
   technology: [],
   myBoard: {},
   board: {},
+  infos: {},
   events: {},
   rangeValues: {},
-  translations: {},
+  translations: {}
 }
 
 const mutations = {
@@ -38,10 +39,10 @@ const mutations = {
     state.ecoPolicies = []
     state.milPolicies = []
     for (let i in payload) {
-      if (payload[i]["TypePolicy"] == "ECO") {
+      if (payload[i]['TypePolicy'] == 'ECO') {
         state.ecoPolicies.push(payload[i])
       }
-      if (payload[i]["TypePolicy"] == "MIL") {
+      if (payload[i]['TypePolicy'] == 'MIL') {
         state.milPolicies.push(payload[i])
       }
     }
@@ -57,6 +58,9 @@ const mutations = {
   },
   LOAD_BOARD_NEW(state, payload) {
     state.board = payload
+  },
+  LOAD_INFOS(state, payload) {
+    state.infos = payload
   },
   LOAD_BOARD(state, payload) {
     state.myBoard = payload
@@ -74,13 +78,10 @@ const mutations = {
         }
       }
     }
-  },
-
+  }
 }
 
-const actions = {
-
-}
+const actions = {}
 
 const store = new Vuex.Store({
   state,
