@@ -44,8 +44,15 @@ export default {
     methods: {
         JoinGame() {
             this.status = 'pending'
+            let baseUrl
+            switch (process.env.NODE_ENV) {
+                case 'production':
+                    baseUrl = 'http://0r0.fr:8081'
+                case 'development':
+                    baseUrl = 'http://localhost:8081'
+            }
             axios
-                .post('http://0r0.fr:8081/JoinGame', {
+                .post(baseUrl + '/JoinGame', {
                     ID: this.profile.ID
                 })
                 .then(
@@ -91,8 +98,16 @@ export default {
             this.initSocket()
         },
         initSocket() {
+            let baseUrl
+            switch (process.env.NODE_ENV) {
+                case 'production':
+                    baseUrl = '0r0.fr'
+                case 'development':
+                    baseUrl = 'localhost'
+            }
+
             if (window['WebSocket'] && this.$store.state.playerProfile) {
-                this.conn = new WebSocket('ws://localhost:5001/ws?id=' + this.$store.state.playerProfile.ID)
+                this.conn = new WebSocket('ws://' + baseUrl + ':5001/ws?id=' + this.$store.state.playerProfile.ID)
                 console.log('CONNECTED')
                 this.conn.onclose = function(evt) {
                     console.log('DC')

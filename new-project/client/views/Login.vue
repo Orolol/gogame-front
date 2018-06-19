@@ -1,21 +1,21 @@
 <template>
-  <div class="login-screen">
-    <div class="input-field">
-      <label class="input-label ">Login</label>
-      <input type="text" v-model="login" class="input-login " />
+    <div class="login-screen">
+        <div class="input-field">
+            <label class="input-label ">Login</label>
+            <input type="text" v-model="login" class="input-login " />
+        </div>
+        <div class="input-field">
+            <label class="input-label ">Password</label>
+            <input type="text" v-model="password" class="input-login " @keyup.enter="loginAction" />
+        </div>
+        <div class="login-button-box">
+            <button @click="loginAction" class="button"> Login </button>
+            <router-link :to="{ name: 'SignUp'}" tag="button" class="button">Sign Up !</router-link>
+            <div class="error-box" v-if="isError">
+            </div>
+            {{errorMessage}}
+        </div>
     </div>
-    <div class="input-field">
-      <label class="input-label ">Password</label>
-      <input type="text" v-model="password" class="input-login " />
-    </div>
-    <div class="login-button-box">
-      <button @click="loginAction" class="button"> Login </button>
-      <router-link :to="{ name: 'SignUp'}" tag="button" class="button">Sign Up !</router-link>
-      <div class="error-box" v-if="isError">
-      </div>
-      {{errorMessage}}
-    </div>
-  </div>
 
 </template>
 
@@ -33,10 +33,15 @@ export default {
     },
     methods: {
         loginAction() {
-            console.log('Try to Login ', this.login, ' / ', this.password)
-            console.log('SEND POST')
+            let baseUrl
+            switch (process.env.NODE_ENV) {
+                case 'production':
+                    baseUrl = 'http://0r0.fr:8081'
+                case 'development':
+                    baseUrl = 'http://localhost:8081'
+            }
             axios
-                .post('http://0r0.fr:8081/Login', {
+                .post(baseUrl + '/Login', {
                     login: this.login,
                     password: this.password
                 })

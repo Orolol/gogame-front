@@ -1,25 +1,25 @@
 <template>
-  <div class="technology">
-    <div class="technology-switch">
-      <button v-for="type, t in technology" class="button" @click="switchType(t)">{{t}}</button>
-    </div>
-    <div class="technologies-sub-box">
-      <div class="" v-for="c, k in currentInfos">
-        <label class="">{{k}}</label>
-        <span class="span-infos"> {{c | number2digits}} </span>
-      </div>
-
-    </div>
-    <div v-for="type, t in technology">
-      <div v-for="tier, k in type" v-if="currentType==t">
-        Tier {{k}}
-        <div class="technology-button">
-          <button v-bind:key="vtech.Name" v-for="vtech, k in tier" class="button" :disabled="techAlreadyKnown(vtech.ActionName) || !vtech.isValid || !vtech.isCostValid" @click="sendGetTech(vtech.ActionName)">{{vtech.Name}} ({{vtech.Costs[0].Value}})</button>
+    <div class="technology">
+        <div class="technology-switch">
+            <button v-for="type, t in technology" class="button" @click="switchType(t)">{{t}}</button>
         </div>
-      </div>
-    </div>
+        <div class="technologies-sub-box">
+            <div class="" v-for="c, k in currentInfos">
+                <label class="">{{k}}</label>
+                <span class="span-infos"> {{c | number2digits}} </span>
+            </div>
 
-  </div>
+        </div>
+        <div v-for="type, t in technology">
+            <div v-for="tier, k in type" v-if="currentType==t">
+                Tier {{k}}
+                <div class="technology-button">
+                    <button v-bind:key="vtech.Name" v-for="vtech, k in tier" class="button" :disabled="techAlreadyKnown(vtech.ActionName) || !vtech.isValid || !vtech.isCostValid" @click="sendGetTech(vtech.ActionName)">{{vtech.Name}} ({{vtech.Costs[0].Value}})</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
 </template>
 
 <script>
@@ -165,8 +165,15 @@ export default {
             return false
         },
         sendGetTech(tech) {
+            let baseUrl
+            switch (process.env.NODE_ENV) {
+                case 'production':
+                    baseUrl = 'http://0r0.fr:8081'
+                case 'development':
+                    baseUrl = 'http://localhost:8081'
+            }
             axios
-                .post('http://0r0.fr:8081/GetTechnology', {
+                .post(baseUrl + '/GetTechnology', {
                     ID: tech,
                     Value: 1,
                     PlayerID: this.$store.state.playerProfile.ID,

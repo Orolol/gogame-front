@@ -225,8 +225,17 @@ export default {
             sendNewAction(a, cd, v)
         },
         sendNewAction(action, cd, value = -1999) {
+            console.log(process.env.NODE_ENV)
+
+            let baseUrl
+            switch (process.env.NODE_ENV) {
+                case 'production':
+                    baseUrl = 'http://0r0.fr:8081'
+                case 'development':
+                    baseUrl = 'http://localhost:8081'
+            }
             axios
-                .post('http://0r0.fr:8081/Actions', {
+                .post(baseUrl + '/Actions', {
                     ID: action,
                     Value: value,
                     PlayerID: this.$store.state.playerProfile.ID,

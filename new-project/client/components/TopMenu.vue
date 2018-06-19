@@ -1,14 +1,14 @@
 <template>
-  <div class="top-menu vertical-menu">
-      <router-link tag="div" class="top-menu-item" to="Game">Play !</router-link>
-      <div class="top-menu-item">Leaderboards</div>
-      <div class="top-menu-item">Profile</div>
-      <div class="top-menu-item">About</div>
-  </div>
+    <div class="top-menu vertical-menu">
+        <router-link tag="div" class="top-menu-item" to="Game">Play !</router-link>
+        <div class="top-menu-item">Leaderboards</div>
+        <router-link tag="div" class="top-menu-item" to="Profile">Profile</router-link>
+        <div class="top-menu-item">About</div>
+    </div>
 </template>
 <script>
 export default {
-  name :"topMenu"
+    name: 'topMenu'
 }
 </script>
 <style>
@@ -21,15 +21,14 @@ export default {
     display: flex;
     justify-content: center;
     width: 100%;
-
-} 
+}
 .top-menu-item {
     /* display: inline-flex; */
     padding: 15px;
 }
 .top-menu-item:hover {
     /* display: inline-flex; */
-     text-shadow: 1px 1px;
+    text-shadow: 1px 1px;
 }
 </style>
 

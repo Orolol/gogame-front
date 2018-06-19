@@ -1,92 +1,89 @@
 <template>
-  <div class="game-wrapper">
-    <div class="gameState">
-      <div class="turnCounter state-element">
-        Current turn : {{ this.currentGame.CurrentTurn }}
-      </div>
-      <div class="state-element" v-if="this.currentGame.State == 'End'">
-          Game ended
-      </div>
-      <div class="state-element" v-else>
-        <div v-if="this.currentGame.isWar">
-            War declared
+    <div class="game-wrapper">
+        <div class="gameState">
+            <div class="turnCounter state-element">
+                Current turn : {{ currentGame.CurrentTurn }}
+            </div>
+            <div class="state-element" v-if="currentGame.State == 'End'">
+                Game ended
+            </div>
+            <div class="state-element" v-else>
+                <div v-if="currentGame.isWar">
+                    War declared
+                </div>
+                <div v-else>
+                    Peace time. Get ready for war !
+                </div>
+            </div>
+
         </div>
-        <div v-else>
-            Peace time. Get ready for war !
+        <div class="decisionBoard">
+            <div class="decision-panel decision-panel-side" v-if="myBoard">
+                <span class="panel-title">INFOS</span>
+                <div class="army-panel">
+                    <div v-for="v, k in myBoard.Territory">
+                        <label>{{k}}</label>
+                        <span>{{v | number0digits}}</span>
+                    </div>
+                </div>
+                <br>
+                <div class="army-panel">
+                    <div v-for="v, k in myBoard.Army">
+                        <label>{{k}}</label>
+                        <span>{{v | number2digits}}</span>
+                    </div>
+                </div>
+                <br>
+                <div class="army-panel">
+                    <div v-for="v, k in myBoard.Economy">
+                        <label>{{k}}</label>
+                        <span>{{v | number2digits}}</span>
+                    </div>
+                </div>
+                <br>
+                <br>
+
+                <div class="pop-panel">
+                </div>
+
+            </div>
+
+            <div class="decision-panel decision-panel-main">
+                <span class="panel-title">ACTIONS</span>
+                <div class="choose-decision-panel">
+                    <button v-for="c, k in categories" class="button" @click="switchPanel(k)" :class="{'button-active': currentDecisionPanel == k}"> {{k}} </button>
+                    <button v-if="myBoard" class="button" @click="switchPanel('teconology')" :class="{'button-active': currentDecisionPanel == 'teconology'}"> TECHNOLOGIES </button>
+                </div>
+
+                <technology v-if="myBoard && currentDecisionPanel=='teconology'"></technology>
+                <category v-for="c, k in categories" :category="k" v-if="myBoard && currentDecisionPanel==k" :subs="c"></category>
+
+            </div>
+
+            <div class="decision-panel decision-panel-side" v-if="hisBoard">
+                <span class="panel-title">ENEMY</span>
+                <div class="army-panel">
+                    <div v-for="v, k in hisBoard.Territory">
+                        <label>{{k}}</label>
+                        <span>{{nFormatter(v, 2)}}</span>
+                    </div>
+                </div>
+                <br>
+                <div class="army-panel">
+                    <div v-for="v, k in hisBoard.Army">
+                        <label>{{k}}</label>
+                        <span>{{nFormatter(v, 2)}}</span>
+                    </div>
+                </div>
+
+                <div class="pop-panel">
+                </div>
+
+            </div>
+
+            <event-log v-if="myBoard"></event-log>
         </div>
-      </div>
-    
     </div>
-    <div class="decisionBoard">
-    <div class="decision-panel decision-panel-side" v-if="myBoard">
-
-      
-        <div class="army-panel">
-          <div v-for="v, k in myBoard.Territory" >
-              <label>{{k}}</label>
-              <span>{{v | number0digits}}</span>
-          </div>
-        </div>
-        <br>
-        <div class="army-panel">
-          <div v-for="v, k in myBoard.Army" >
-              <label>{{k}}</label>
-              <span>{{v | number0digits}}</span>
-          </div>
-        </div>
-        <br>
-        <div class="army-panel">
-          <div v-for="v, k in myBoard.Economy" >
-              <label>{{k}}</label>
-              <span>{{v | number0digits}}</span>
-          </div>
-        </div>
-        <br>
-        <br>
-
-
-        <div class="pop-panel">
-        </div>
-
-    </div>
-
-
-    <div class="decision-panel decision-panel-main">
-      <div class="choose-decision-panel">
-        <button v-for="c, k in categories" class="button" @click="switchPanel(k)" :class="{'button-active': currentDecisionPanel == k}"> {{k}} </button>
-        <button class="button" @click="switchPanel('teconology')" :class="{'button-active': currentDecisionPanel == 'teconology'}"> TECHNOLOGIES </button>
-      </div>
-      
-      <technology v-if="myBoard && currentDecisionPanel=='teconology'"></technology>
-      <category v-for="c, k in categories" :category="k"  v-if="myBoard && currentDecisionPanel==k" :subs="c"></category>
-
-    </div>
-
-   
-        
-        
-    <div class="decision-panel decision-panel-side" v-if="hisBoard">
-        <div class="army-panel">
-          <div v-for="v, k in hisBoard.Territory" >
-              <label>{{k}}</label>
-              <span>{{nFormatter(v, 2)}}</span>
-          </div>
-        </div>
-        <br>
-        <div class="army-panel">
-          <div v-for="v, k in hisBoard.Army" >
-              <label>{{k}}</label>
-              <span>{{nFormatter(v, 2)}}</span>
-          </div>
-        </div>
-
-        <div class="pop-panel">
-        </div>
-
-    </div>
-    <event-log v-if="myBoard"></event-log>
-  </div>
-  </div>
 </template>
 
 <script>
@@ -164,6 +161,11 @@ export default {
 .choose-decision-panel {
     display: flex;
     justify-content: center;
+}
+
+.panel-title {
+    padding-bottom: 5px;
+    font-weight: 600;
 }
 
 .gameState {

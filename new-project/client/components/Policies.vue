@@ -7,6 +7,7 @@
                     <select v-model="cmpPolicyValue[v.ActionName]" @change="sendNewPolicy(v.ActionName, $event)" class="select-policy">
                         <option v-for="(elem, key) in v.PossibleValue2" :value="elem.Value">{{elem.Name}}</option>
                     </select>
+                    <span class="description">{{v.Description}}</span>
                 </div>
             </div>
         </div>
@@ -49,6 +50,8 @@ export default {
                     this.currentPoliciesValue[p.ActionName] = String(this.cmpBoardValues.ModifierPolicy[p.PossibleValue2[0].Effects[0].ModifierName])
                 } else if (p.PossibleValue2[0].Effects[0].ModifierType == 'Economy') {
                     this.currentPoliciesValue[p.ActionName] = this.cmpBoardValues.Economy[p.PossibleValue2[0].Effects[0].ModifierName]
+                } else if (p.PossibleValue2[0].Effects[0].ModifierType == 'Modifiers') {
+                    this.currentPoliciesValue[p.ActionName] = this.cmpBoardValues.Modifiers[p.PossibleValue2[0].Effects[0].ModifierName]
                 }
             }
             console.log(this.currentPoliciesValue)
@@ -84,9 +87,15 @@ export default {
             return JSON.parse(jsonList)
         },
         sendNewPolicy(policy, event) {
-            console.log(policy, event)
+            let baseUrl
+            switch (process.env.NODE_ENV) {
+                case 'production':
+                    baseUrl = 'http://0r0.fr:8081'
+                case 'development':
+                    baseUrl = 'http://localhost:8081'
+            }
             axios
-                .post('http://0r0.fr:8081/ChangePolicy', {
+                .post(baseUrl + '/ChangePolicy', {
                     ID: policy,
                     Value: Number(event.target.value),
                     PlayerID: this.$store.state.playerProfile.ID,

@@ -1,28 +1,27 @@
 <template>
     <div class="category">
-      <div class="sub-switch" >
-       <button class="button" v-for="t, y in subs" @click="subCategory = y" :class="{'button-active': subCategory == y}">{{y}}</button>
-      </div>
-            <div v-for="t, y in subs" v-if="subCategory == y" >
-                    <subCat :subCategory="y" :category="category" :cat="t"></subCat>
-            </div>
+        <div class="sub-switch">
+            <button class="button" v-for="t, y in subs" @click="subCategory = y" :class="{'button-active': subCategory == y}">{{y}}</button>
+        </div>
+        <div v-for="t, y in subs" v-if="subCategory == y">
+            <subCat :subCategory="y" :category="category" :cat="t"></subCat>
+        </div>
     </div>
 </template>
 
 <script>
-import axios from "axios"
-import Vue from "vue"
-import subCat from "./SubCat"
-import VueSlider from "vue-slider-component"
+import Vue from 'vue'
+import subCat from './SubCat'
+import VueSlider from 'vue-slider-component'
 export default {
     data() {
         return {
             actionUsed: {},
             rangeValues: {},
-            subCategory: ""
+            subCategory: ''
         }
     },
-    props: ["subs", "category"],
+    props: ['subs', 'category'],
     components: {
         VueSlider,
         subCat
