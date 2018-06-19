@@ -235,11 +235,7 @@ export default {
                     baseUrl = 'http://localhost:8081'
             }
             axios
-<<<<<<< HEAD
                 .post(baseUrl + '/Actions', {
-=======
-                .post('http://localhost:8081/Actions', {
->>>>>>> 3509b742cea111d3844c0b314a68e95b4d3d020f
                     ID: action,
                     Value: value,
                     PlayerID: this.$store.state.playerProfile.ID,
