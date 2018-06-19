@@ -1,12 +1,13 @@
 <template>
-  <div id="app">
-    <top-menu></top-menu>
-    <router-view></router-view>
-  </div>
+    <div id="app">
+        <top-menu></top-menu>
+        <router-view></router-view>
+    </div>
 </template>
 
 <script>
 import topMenu from './TopMenu'
+import axios from 'axios'
 export default {
     components: {
         topMenu
@@ -16,6 +17,27 @@ export default {
         if (!this.$store.state.token) {
             this.$router.push('Login')
         }
+        let baseUrl
+        switch (process.env.NODE_ENV) {
+            case 'production':
+                baseUrl = 'http://0r0.fr:8081'
+            case 'development':
+                baseUrl = 'http://localhost:8081'
+        }
+        axios
+            .post(baseUrl + '/GetTranslations', {
+                language: 'en'
+            })
+            .then(
+                function(data) {
+                    console.log(data)
+                    for (let d in data.data)
+                        this.$store.commit('LOAD_TRANSLATIONS', {
+                            name: data.data[d].ActionName,
+                            value: data.data[d]
+                        })
+                }.bind(this)
+            )
     }
 }
 </script>

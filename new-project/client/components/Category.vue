@@ -20,6 +20,7 @@ export default {
             rangeValues: {},
             subCategory: ''
         }
+        
     },
     props: ['subs', 'category'],
     components: {

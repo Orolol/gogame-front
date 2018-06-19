@@ -2,18 +2,61 @@
     <div class="game-wrapper">
         <div class="gameState">
             <div class="turnCounter state-element">
-                Current turn : {{ currentGame.CurrentTurn }}
+                Current turn : {{ this.currentGame.CurrentTurn }}
             </div>
-            <div class="state-element" v-if="currentGame.State == 'End'">
+            <div class="state-element" v-if="this.currentGame.State == 'End'">
                 Game ended
             </div>
             <div class="state-element" v-else>
-                <div v-if="currentGame.isWar">
+                <div v-if="this.currentGame.isWar">
                     War declared
                 </div>
                 <div v-else>
                     Peace time. Get ready for war !
                 </div>
+            </div>
+
+        </div>
+        <div class="decisionBoard">
+            <div class="decision-panel decision-panel-side" v-if="myBoard">
+
+                <div class="army-panel">
+                    <div v-for="v, k in myBoard.Territory">
+                        <label>{{k}}</label>
+                        <span>{{v | number0digits}}</span>
+                    </div>
+                </div>
+                <br>
+                <div class="army-panel">
+                    <div v-for="v, k in myBoard.Army">
+                        <label>{{k | getTranslationShortName}}</label>
+                        <span>{{v | number0digits}}</span>
+                    </div>
+                </div>
+                <br>
+                <div class="army-panel">
+                    <div v-for="v, k in myBoard.Economy">
+                        <label>{{k}}</label>
+                        <span>{{v | number0digits}}</span>
+                    </div>
+                </div>
+                <br>
+                <br>
+
+                <div class="pop-panel">
+                </div>
+
+            </div>
+
+            <div class="decision-panel decision-panel-main">
+                <div class="choose-decision-panel">
+                    <button v-for="c, k in categories" class="button" @click="switchPanel(k)" :class="{'button-active': currentDecisionPanel == k}"> {{k}} </button>
+                    <button class="button" @click="switchPanel('teconology')" :class="{'button-active': currentDecisionPanel == 'teconology'}"> TECHNOLOGIES </button>
+                </div>
+
+                <technology v-if="myBoard && currentDecisionPanel=='teconology'"></technology>
+                <category v-for="c, k in categories" :category="k" v-if="myBoard && currentDecisionPanel==k" :subs="c"></category>
+
             </div>
 
         </div>
