@@ -5,7 +5,7 @@
             <p>ELO : {{profile.ELO}}</p>
             <div v-if="status == 'off' || this.currentGame.State == 'End'">
                 <button class="button" @click="JoinGame">Join PVP Game</button>
-                <button class="button">Join AI Game</button>
+                <button class="button" @click="JoinGameAi">Join AI Game</button>
             </div>
             <div v-if="status == 'pending'">
                 Looking for an opponent
@@ -93,10 +93,61 @@ export default {
                 })
             this.initSocket()
         },
-        initSocket() {
+        JoinGameAi() {
+            this.status = 'pending'
             let baseUrl
             if (process.env.NODE_ENV == 'production') baseUrl = 'http://0r0.fr:8081'
             if (process.env.NODE_ENV == 'development') baseUrl = 'http://localhost:8081'
+            axios
+                .post(baseUrl + '/JoinGameAi', {
+                    ID: this.profile.ID
+                })
+                .then(
+                    function(response) {
+                        let cats = {}
+                        for (let i in response.data.policies) {
+                            let pl = response.data.policies[i]
+                            if (!cats[pl.TypePolicy]) {
+                                cats[pl.TypePolicy] = {}
+                            }
+                            if (!cats[pl.TypePolicy][pl.SubType]) {
+                                cats[pl.TypePolicy][pl.SubType] = {}
+                            }
+                            if (!cats[pl.TypePolicy][pl.SubType]['policies']) {
+                                cats[pl.TypePolicy][pl.SubType]['policies'] = []
+                            }
+                            cats[pl.TypePolicy][pl.SubType]['policies'].push(pl)
+                        }
+                        for (let i in response.data.actions) {
+                            let pl = response.data.actions[i]
+                            if (!cats[pl.Type]) {
+                                cats[pl.Type] = {}
+                            }
+
+                            if (!cats[pl.Type][pl.SubType]) {
+                                cats[pl.Type][pl.SubType] = {}
+                            }
+                            if (!cats[pl.Type][pl.SubType]['actions']) {
+                                cats[pl.Type][pl.SubType]['actions'] = []
+                            }
+                            cats[pl.Type][pl.SubType]['actions'].push(pl)
+                        }
+                        this.$store.commit('LOAD_BOARD_NEW', cats)
+                        this.$store.commit('LOAD_POLICIES', response.data.policies)
+                        this.$store.commit('LOAD_ACTIONS', response.data.actions)
+                        this.$store.commit('LOAD_TECH', response.data.technology)
+                        this.$store.commit('LOAD_EVENTS', response.data.events)
+                    }.bind(this)
+                )
+                .catch(function(error) {
+                    console.log(error)
+                })
+            this.initSocket()
+        },
+        initSocket() {
+            let baseUrl
+            if (process.env.NODE_ENV == 'production') baseUrl = '0r0.fr'
+            if (process.env.NODE_ENV == 'development') baseUrl = 'localhost'
 
             if (window['WebSocket'] && this.$store.state.playerProfile) {
                 this.conn = new WebSocket('ws://' + baseUrl + ':5001/ws?id=' + this.$store.state.playerProfile.ID)

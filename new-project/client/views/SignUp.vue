@@ -1,19 +1,19 @@
 <template>
-    <div class="login-screen">
-        <div>
-            <span>Login</span>
+    <div class="page login-screen profile">
+        <div class="profileInfo">
+            <label>Login</label>
             <input type="text" v-model="login" required/>
         </div>
-        <div>
-            <span>Password</span>
+        <div class="profileInfo">
+            <label>Password</label>
             <input type="password" v-model="password" required/>
         </div>
-        <div>
-            <span>Repeat Password</span>
+        <div class="profileInfo">
+            <label>Repeat Password</label>
             <input type="password" v-model="password2" required/>
         </div>
-        <div>
-            <span>Nickname</span>
+        <div class="profileInfo">
+            <label>Nickname</label>
             <input type="text" v-model="name" required/>
         </div>
 
