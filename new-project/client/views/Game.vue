@@ -45,12 +45,8 @@ export default {
         JoinGame() {
             this.status = 'pending'
             let baseUrl
-            switch (process.env.NODE_ENV) {
-                case 'production':
-                    baseUrl = 'http://0r0.fr:8081'
-                case 'development':
-                    baseUrl = 'http://localhost:8081'
-            }
+            if (process.env.NODE_ENV == 'production') baseUrl = 'http://0r0.fr:8081'
+            if (process.env.NODE_ENV == 'development') baseUrl = 'http://localhost:8081'
             axios
                 .post(baseUrl + '/JoinGame', {
                     ID: this.profile.ID
@@ -99,12 +95,8 @@ export default {
         },
         initSocket() {
             let baseUrl
-            switch (process.env.NODE_ENV) {
-                case 'production':
-                    baseUrl = '0r0.fr'
-                case 'development':
-                    baseUrl = 'localhost'
-            }
+            if (process.env.NODE_ENV == 'production') baseUrl = 'http://0r0.fr:8081'
+            if (process.env.NODE_ENV == 'development') baseUrl = 'http://localhost:8081'
 
             if (window['WebSocket'] && this.$store.state.playerProfile) {
                 this.conn = new WebSocket('ws://' + baseUrl + ':5001/ws?id=' + this.$store.state.playerProfile.ID)

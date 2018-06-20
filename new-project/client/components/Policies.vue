@@ -88,12 +88,8 @@ export default {
         },
         sendNewPolicy(policy, event) {
             let baseUrl
-            switch (process.env.NODE_ENV) {
-                case 'production':
-                    baseUrl = 'http://0r0.fr:8081'
-                case 'development':
-                    baseUrl = 'http://localhost:8081'
-            }
+            if (process.env.NODE_ENV == 'production') baseUrl = 'http://0r0.fr:8081'
+            if (process.env.NODE_ENV == 'development') baseUrl = 'http://localhost:8081'
             axios
                 .post(baseUrl + '/ChangePolicy', {
                     ID: policy,
