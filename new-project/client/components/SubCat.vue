@@ -4,24 +4,25 @@
             <actions :propsActions="cat.actions"></actions>
             <policies :propsPolicies="cat.policies"></policies>
         </div>
-        
+
         <div class="infos sub-box">
             <div class="info" v-for="c in currentInfos">
-                <label class="label-infos">{{c.Name}}</label> <span class="span-infos"> {{c.Value | number2digits}} </span>
-                
-            </div> 
+                <label class="label-infos">{{c.Name}}</label>
+                <span class="span-infos"> {{c.Value | number2digits}} </span>
+
+            </div>
         </div>
     </div>
 </template>
 
 <script>
-import axios from "axios"
-import Vue from "vue"
-import actions from "./Actions"
-import policies from "./Policies"
+import axios from 'axios'
+import Vue from 'vue'
+import actions from './Actions'
+import policies from './Policies'
 export default {
-    name: "subCat",
-    props: ["category", "subCategory", "cat"],
+    name: 'subCat',
+    props: ['category', 'subCategory', 'cat'],
     components: {
         actions,
         policies
@@ -33,10 +34,8 @@ export default {
             let arr = []
             for (let r in this.$store.state.myBoard.PlayerInformations) {
                 if (
-                    this.$store.state.myBoard.PlayerInformations[r].Type ==
-                        this.category &&
-                    this.$store.state.myBoard.PlayerInformations[r].SubType ==
-                        this.subCategory
+                    this.$store.state.myBoard.PlayerInformations[r].Type == this.category &&
+                    this.$store.state.myBoard.PlayerInformations[r].SubType == this.subCategory
                 ) {
                     arr.push(this.$store.state.myBoard.PlayerInformations[r])
                 }
@@ -71,13 +70,14 @@ export default {
 .sub-category {
     display: flex;
     padding: 10px;
+    font-size: 0.9vw;
 }
 .sub-box {
     padding: 10px;
 }
 .infos {
     width: 40%;
-    font-size: 14px;
+    font-size: 0.8vw;
 }
 
 .right-box {

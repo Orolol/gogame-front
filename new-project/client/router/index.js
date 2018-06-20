@@ -5,6 +5,7 @@ import Game from '../views/Game'
 import Login from '../views/Login'
 import Profile from '../views/Profile'
 import SignUp from '../views/SignUp'
+import LeaderBoard from '../views/LeaderBoard'
 
 Vue.use(Router)
 
@@ -30,6 +31,11 @@ export default new Router({
       path: '/Profile',
       component: Profile,
       name: 'Profile'
+    },
+    {
+      path: '/LeaderBoard',
+      component: LeaderBoard,
+      name: 'LeaderBoard'
     },
     {
       path: '/SignUp',

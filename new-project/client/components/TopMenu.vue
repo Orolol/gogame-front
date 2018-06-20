@@ -1,7 +1,7 @@
 <template>
     <div class="top-menu vertical-menu">
         <router-link tag="div" class="top-menu-item" to="Game">Play !</router-link>
-        <div class="top-menu-item">Leaderboards</div>
+        <router-link tag="div" class="top-menu-item" to="LeaderBoard">Leaderboards</router-link>
         <router-link tag="div" class="top-menu-item" to="Profile">Profile</router-link>
         <div class="top-menu-item">About</div>
     </div>

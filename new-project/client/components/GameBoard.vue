@@ -101,14 +101,15 @@ export default {
         },
         myInfos() {
             let ret = {}
-            console.log(this.$store.state.infos[0].Infos)
             if (!ret[this.$store.state.infos[0].Category]) {
                 ret[this.$store.state.infos[0].Category] = []
             }
             for (let i in this.$store.state.infos[0].Infos) {
-                let inf = this.$store.state.infos[0].Infos[i]
-                if (inf.Type != 'Separator') {
+                let inf = { ...this.$store.state.infos[0].Infos[i] }
+                if (inf.Type != 'Separator' && inf.Type != 'PlayerInformations') {
                     inf.Value = this.myBoard[inf.Type][inf.Name]
+                } else if (inf.Type == 'PlayerInformations') {
+                    inf.Value = this.myBoard[inf.Type][inf.Name].Value
                 } else {
                     inf.Value = 0
                 }
@@ -118,14 +119,15 @@ export default {
         },
         hisInfos() {
             let ret = {}
-            console.log(this.$store.state.infos[0].Infos)
             if (!ret[this.$store.state.infos[0].Category]) {
                 ret[this.$store.state.infos[0].Category] = []
             }
             for (let i in this.$store.state.infos[0].Infos) {
-                let inf = this.$store.state.infos[0].Infos[i]
-                if (inf.Type != 'Separator') {
+                let inf = { ...this.$store.state.infos[0].Infos[i] }
+                if (inf.Type != 'Separator' && inf.Type != 'PlayerInformations') {
                     inf.Value = this.hisBoard[inf.Type][inf.Name]
+                } else if (inf.Type == 'PlayerInformations') {
+                    inf.Value = this.hisBoard[inf.Type][inf.Name].Value
                 } else {
                     inf.Value = 0
                 }
@@ -208,14 +210,14 @@ export default {
     text-align: left;
     position: absolute;
     left: 50px;
-    font-size: 0.9vw;
+    font-size: 0.8vw;
     box-shadow: 5px 0 12px #d8d8d8;
 }
 .hisBoard {
     text-align: right;
     position: absolute;
     right: 50px;
-    font-size: 0.9vw;
+    font-size: 0.8vw;
     box-shadow: 0 5px 12px #d8d8d8;
 }
 
@@ -225,7 +227,7 @@ export default {
     width: 100%;
     height: 100%;
     display: flex;
-    font-size: 1.1vw;
+    font-size: 0.9vw;
 }
 
 .game-wrapper {
