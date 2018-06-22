@@ -1,20 +1,27 @@
 <template>
     <div class="technology">
         <div class="technology-switch">
-            <button v-for="type, t in technology" class="button" @click="switchType(t)">{{t}}</button>
+            <button v-for="type, t in technology" class="button" @click="switchType(t)">{{t}} </button>
         </div>
         <div class="technologies-sub-box">
-            <div class="" v-for="c, k in currentInfos">
+            <!-- <div class="" v-for="c, k in currentInfos">
                 <label class="">{{k}}</label>
                 <span class="span-infos"> {{c | number2digits}} </span>
-            </div>
+            </div> -->
 
         </div>
         <div v-for="type, t in technology">
             <div v-for="tier, k in type" v-if="currentType==t">
                 Tier {{k}}
-                <div class="technology-button">
-                    <button v-bind:key="vtech.Name" v-for="vtech, k in tier" class="button" :disabled="techAlreadyKnown(vtech.ActionName) || !vtech.isValid || !vtech.isCostValid" @click="sendGetTech(vtech.ActionName)">{{vtech.Name}} ({{vtech.Costs[0].Value}})</button>
+                <div class="technology-tier">
+                    <button @mouseover="setHover(v.ActionName)" @mouseleave="setHover('')" v-bind:key="v.Name" v-for="v, k in tier" class="button technology-button" :disabled="techAlreadyKnown(v.ActionName) || !v.isValid || !v.isCostValid" @click="sendGetTech(v.ActionName)">
+                        <span v-if="hovered != v.ActionName">
+                            {{v.ActionName | getTranslationShortName}}
+                            <br>
+                            <span class="costs" v-html="getCosts(v.Costs)"></span>
+                        </span>
+                        <span v-if="hovered == v.ActionName">{{v.Description}}</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -28,7 +35,8 @@ import Vue from 'vue'
 export default {
     data() {
         return {
-            currentType: 'INDUS'
+            currentType: 'INDUS',
+            hovered: ''
         }
     },
 
@@ -66,6 +74,25 @@ export default {
         }
     },
     methods: {
+        setHover(d) {
+            this.hovered = d
+        },
+        getCosts(s) {
+            let ret = ''
+            for (let i in s) {
+                this
+                if (s[i].Type == 'money') {
+                    ret += s[i].Value + "<img class='icon' src='money.png' />"
+                }
+                if (s[i].Type == 'morale') {
+                    ret += s[i].Value + "% <img class='icon' src='morale.png' />"
+                }
+                if (s[i].Type == 'science') {
+                    ret += s[i].Value + "<img class='icon' src='research.png' />"
+                }
+            }
+            return ret
+        },
         switchType(n) {
             this.currentType = n
         },
@@ -193,8 +220,12 @@ export default {
     justify-content: center;
     display: flex;
 }
-.technology-button {
+.technology-tier {
     display: flex;
+}
+.technology-button {
+    height: 7vh;
+    width: 33%;
 }
 
 .technology {

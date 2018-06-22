@@ -1,18 +1,18 @@
 <template>
     <div class="policies">
         <div class="eco-policies policies">
-            <div class="army-panel">
+            <div class="">
                 <div v-for="v, k in ecoPolicies">
                     <span>{{v.Name}}</span>
                     <select v-model="cmpPolicyValue[v.ActionName]" @change="sendNewPolicy(v.ActionName, $event)" class="select-policy">
                         <option v-for="(elem, key) in v.PossibleValue2" :value="elem.Value">{{elem.Name}}</option>
                     </select>
-                    <span class="description">{{v.Description}}</span>
+                    <p class="description">{{v.Description}}</p>
                 </div>
             </div>
         </div>
         <!-- <div class="mil-policies policies">
-        <div class="army-panel">
+        <div class="infoPanel">
           <div v-for="v, k in milPolicies" >
             <span>{{v.Name}}</span>
             <select v-model="cmpPolicyValue[v]" @change="sendNewPolicy(v.ActionName , $event)"  class="select-policy">

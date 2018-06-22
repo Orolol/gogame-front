@@ -1,7 +1,7 @@
 <template>
     <div class="login-screen">
         <div class="input-field">
-            <label class="input-label ">Login2</label>
+            <label class="input-label ">Login</label>
             <input type="text" v-model="login" class="input-login " />
         </div>
         <div class="input-field">

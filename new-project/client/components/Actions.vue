@@ -2,9 +2,18 @@
     <div class="actions">
         <div v-for="v, k  in actions">
             <div v-if="v.Selector == 'fixed'">
-                <button class="button" :disabled="!actionUsedCheck(v.ActionName) || !v.isCostOk" @click="sendNewAction(v.ActionName, v.Cooldown)">{{v.Name}}</button>
-                <br>
-                <span class="description">{{v.Description}}</span>
+                <button @mouseover="setHover(v.ActionName)" @mouseleave="setHover('')" class="button action-button" :disabled="!actionUsedCheck(v.ActionName) || !v.isCostOk || !v.isConstraintOk" @click="sendNewAction(v.ActionName, v.Cooldown)">
+                    <span v-if="hovered != v.ActionName">{{v.Name}} <br>
+                        <span class="costs" v-html="getCosts(v.Costs)"></span>
+                        <span v-if="!v.isConstraintOk">
+                            <br>
+                            <span>unlock with :</span><br>
+                            <span v-for="c in v.Constraints"> {{c.Value | getTranslationShortName}}<br> </span>
+                        </span>
+                    </span>
+                    <span v-if="hovered == v.ActionName">{{v.Description}}</span>
+                </button>
+
                 <span v-if="!actionUsedCheck(v.ActionName)">{{ actionUsed[v.ActionName] - $store.state.currentGame.CurrentTurn}}</span>
             </div>
 
@@ -29,7 +38,8 @@ export default {
         return {
             actionUsed: {},
             rangeValues: {},
-            actionType: 'ECONOMIC'
+            actionType: 'ECONOMIC',
+            hovered: null
         }
     },
     props: ['propsActions'],
@@ -113,15 +123,56 @@ export default {
                 } else {
                     a.isCostOk = false
                 }
-                if (this.checkConstraint(a.Constraints)) {
-                    sortedActions.push(a)
+                if (!this.checkConstraint(a.Constraints)) {
+                    a.isConstraintOk = false
+                } else {
+                    a.isConstraintOk = true
                 }
+                sortedActions.push(a)
             }
 
             return sortedActions
         }
     },
     methods: {
+        setHover(d) {
+            this.hovered = d
+        },
+        digits(num) {
+            let digits = 2
+            var si = [
+                    { value: 1e18, symbol: 'E' },
+                    { value: 1e15, symbol: 'P' },
+                    { value: 1e12, symbol: 'T' },
+                    { value: 1e9, symbol: 'G' },
+                    { value: 1e6, symbol: 'M' },
+                    { value: 1e3, symbol: 'k' }
+                ],
+                rx = /\.0+$|(\.[0-9]*[1-9])0+$/,
+                i
+            for (i = 0; i < si.length; i++) {
+                if (num >= si[i].value) {
+                    return (num / si[i].value).toFixed(digits).replace(rx, '$1') + si[i].symbol
+                }
+            }
+            return num.toFixed(digits).replace(rx, '$1')
+        },
+        getCosts(s) {
+            let ret = ''
+            for (let i in s) {
+                this
+                if (s[i].Type == 'money' && s[i].Value != 0) {
+                    ret += this.digits(s[i].Value) + "<img class='icon' src='money.png' />"
+                }
+                if (s[i].Type == 'morale' && s[i].Value != 0) {
+                    ret += this.digits(s[i].Value) + "% <img class='icon' src='morale.png' />"
+                }
+                if (s[i].Type == 'science' && s[i].Value != 0) {
+                    ret += this.digits(s[i].Value) + "<img class='icon' src='research.png' />"
+                }
+            }
+            return ret
+        },
         toNumber(s) {
             return number(s)
         },
@@ -251,6 +302,34 @@ export default {
 </script>
 
 <style>
+.action-button {
+    min-height: 6vh;
+    width: 65%;
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    border: 1px solid gray;
+    background-color: #ddd;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+}
+
 .actions {
     text-align: left;
     font-size: 14px;

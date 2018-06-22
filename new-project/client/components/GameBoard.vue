@@ -1,6 +1,6 @@
 <template>
     <div class="game-wrapper">
-        <div class="gameState">
+        <div class="gameState" v-if="myBoard">
             <div class="turnCounter state-element">
                 Current turn : {{ this.currentGame.CurrentTurn }}
             </div>
@@ -18,22 +18,33 @@
 
         </div>
         <div class="decisionBoard">
+            <span class="help-box" v-if="help=='infos'">
+                <p class="closing" @click=' help = null'> X </p>{{'InfosTooltip' | getTranslationShortName }}</span>
             <div class="decision-panel decision-panel-side" v-if="myBoard">
-                <span class="panel-title">INFOS</span>
-                <div class="army-panel">
+
+                <span class="panel-title">INFOS
+                    <span class="help" @click="help=='infos'? help = null :help = 'infos'">?</span>
+                </span>
+                <div class="infoPanel">
                     <div v-for="v, k in myInfos.generalInfos" v-if="v.Type != 'Separator'">
-                        <label>{{v.Name | getTranslationShortName}}</label>
-                        <span :class="{'lowAlert': v.LowAlert && v.Value < v.LowAlert , 'veryLowAlert': v.VeryLowAlert && v.Value < v.VeryLowAlert}">{{v.Value | number2digits}}</span>
+
+                        <span class="infoPanelLabel">
+                            {{v.Name | getTranslationShortName}}</span>
+                        <img class='icon' :src="getIcons(v.Name)" v-if="getIcons(v.Name)" />
+                        <span class="infoValue" :class="{'lowAlert': v.LowAlert && v.Value < v.LowAlert , 'veryLowAlert': v.VeryLowAlert && v.Value < v.VeryLowAlert}">{{v.Value | number2digits}}
+                            <span v-if="v.GrowthValue" class="growthInfo"> {{v.GrowthValue | number2digits}} &uarr;</span>
+                        </span>
+
                     </div>
                     <div v-else>
-                        <label>&nbsp </label>
+                        <div>&nbsp </div>
                         <span> </span>
                     </div>
                 </div>
 
             </div>
 
-            <div class="decision-panel decision-panel-main">
+            <div class="decision-panel decision-panel-main" v-if="myBoard">
                 <span class="panel-title">ACTIONS</span>
                 <div class="choose-decision-panel">
                     <button v-for="c, k in categories" class="button" @click="switchPanel(k)" :class="{'button-active': currentDecisionPanel == k}"> {{k}} </button>
@@ -47,10 +58,11 @@
 
             <div class="decision-panel decision-panel-side" v-if="hisBoard">
                 <span class="panel-title">ENEMY | {{hisBoard.Nick}}</span>
-                <div class="army-panel">
+                <div class="infoPanel">
                     <div v-for="v, k in hisInfos.generalInfos" v-if="v.Type != 'Separator'">
-                        <label>{{v.Name | getTranslationShortName}}</label>
-                        <span :class="{'lowAlert': v.LowAlert && v.Value < v.LowAlert , 'veryLowAlert': v.VeryLowAlert && v.Value < v.VeryLowAlert}">{{v.Value | number2digits}}</span>
+                        <span class="infoPanelLabel">{{v.Name | getTranslationShortName}}</span>
+                        <img class='icon' :src="getIcons(v.Name)" v-if="getIcons(v.Name)" />
+                        <span class="infoValue" :class="{'lowAlert': v.LowAlert && v.Value < v.LowAlert , 'veryLowAlert': v.VeryLowAlert && v.Value < v.VeryLowAlert}">{{v.Value | number2digits}}</span>
                     </div>
                     <div v-else>
                         <label>&nbsp </label>
@@ -85,7 +97,8 @@ export default {
     },
     data() {
         return {
-            currentDecisionPanel: 'policy'
+            currentDecisionPanel: 'policy',
+            help: null
         }
     },
 
@@ -112,6 +125,16 @@ export default {
                     inf.Value = this.myBoard[inf.Type][inf.Name].Value
                 } else {
                     inf.Value = 0
+                }
+
+                if (inf.GrowthName) {
+                    if (inf.GrowthType != 'Separator' && inf.GrowthType != 'PlayerInformations') {
+                        inf.GrowthValue = this.myBoard[inf.GrowthType][inf.GrowthName]
+                    } else if (inf.GrowthType == 'PlayerInformations') {
+                        inf.GrowthValue = this.myBoard[inf.GrowthType][inf.GrowthName].Value
+                    } else {
+                        inf.GrowthValue = 0
+                    }
                 }
                 ret[this.$store.state.infos[0].Category].push(inf)
             }
@@ -151,6 +174,19 @@ export default {
         }
     },
     methods: {
+        getIcons(actionName) {
+            let icn = null
+            if (actionName == 'Money') {
+                icn = 'money.png'
+            }
+            if (actionName == 'NbResearchPoint') {
+                icn = 'research.png'
+            }
+            if (actionName == 'Morale') {
+                icn = 'morale.png'
+            }
+            return icn
+        },
         switchPanel(n) {
             this.currentDecisionPanel = n
         },
@@ -177,6 +213,61 @@ export default {
 </script>
 
 <style>
+.closing {
+    float: right;
+    padding: 5px;
+}
+.closing:hover {
+    font-weight: 800;
+    color: black;
+    cursor: pointer;
+    font-style: unset;
+}
+
+.help-box {
+    border: 1px solid grey;
+    background-color: lightgrey;
+    position: absolute;
+    width: 15%;
+    padding: 7px;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.24), 0 17px 50px 0 rgba(0, 0, 0, 0.19);
+}
+
+.infoPanelLabel {
+    /* vertical-align: middle; */
+    /* color: red; */
+}
+
+.help {
+    float: right;
+}
+.help:hover {
+    font-weight: 800;
+    color: black;
+    cursor: pointer;
+}
+
+.infoPanel div {
+    height: 20px;
+}
+
+.infoValue {
+    float: right;
+}
+
+.icon {
+    vertical-align: middle;
+    max-width: 20px;
+}
+
+.growthInfo {
+    font-size: 0.7vw;
+    vertical-align: top;
+    color: green;
+    font-weight: 600;
+}
+
 .choose-decision-panel {
     display: flex;
     justify-content: center;

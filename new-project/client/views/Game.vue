@@ -163,7 +163,7 @@ export default {
                     for (var i = 0; i < messages.length; i++) {
                         if (messages[i] != '"pong"') {
                             this.$store.commit('LOAD_GAME', JSON.parse(messages[i]))
-                            if (this.$store.state.currentGame.State == 'END') {
+                            if (this.$store.state.currentGame.State == 'End') {
                                 console.log('END GAME ! ')
                                 this.conn.close()
                             }
@@ -205,5 +205,8 @@ export default {
 .playerSmallProfile {
     position: fixed;
     z-index: 99;
+    text-align: center;
+    border: 1px solid grey;
+    border-radius: 8px;
 }
 </style>
