@@ -20,21 +20,17 @@ export default {
         let baseUrl
         if (process.env.NODE_ENV == 'production') baseUrl = 'http://0r0.fr:8081'
         if (process.env.NODE_ENV == 'development') baseUrl = 'http://localhost:8081'
-        axios
-            .post(baseUrl + '/GetTranslations', {
-                language: 'en'
-            })
-            .then(
-                function(data) {
-                    console.log(data)
-                    for (let d in data.data)
-                        this.$store.commit('LOAD_TRANSLATIONS', {
-                            name: data.data[d].ActionName,
-                            value: data.data[d]
-                        })
-                }.bind(this)
-            )
-        axios.post(baseUrl + '/GetInfos').then(
+        axios.get(baseUrl + '/GetTranslations/en').then(
+            function(data) {
+                console.log(data)
+                for (let d in data.data)
+                    this.$store.commit('LOAD_TRANSLATIONS', {
+                        name: data.data[d].ActionName,
+                        value: data.data[d]
+                    })
+            }.bind(this)
+        )
+        axios.get(baseUrl + '/GetInfos').then(
             function(data) {
                 this.$store.commit('LOAD_INFOS', data.data)
             }.bind(this)

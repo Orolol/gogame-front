@@ -6,6 +6,15 @@
                     <p>{{profile.Name}}</p>
                     <p>ELO : {{profile.ELO}}</p>
                 </div>
+
+                <div class="profileInfo">
+                    <img class="profilePic" :src="profile.ProfilePic + '.png'">
+                    <button class="button" @click="showPPS = !showPPS">Edit</button>
+                    <div v-for="i in pplist"  v-if="showPPS">
+                        <img class="profilePic" :src="i.Name + '.png'"/>
+                        <button class="button" @click="profile.ProfilePic = i.Name">Select</button>
+                    </div>
+                </div>
                 <div class="profileInfo">
                     <label>Login</label>
                     <input type="text" v-model="profile.Login" disabled/>
@@ -51,7 +60,9 @@ export default {
             profile: this.$store.state.playerProfile,
             currentGame: this.$store.state.currentGame,
             isError: false,
-            gameList: []
+            gameList: [],
+            showPPS: false,
+            pplist: []
         }
     },
     mounted() {
@@ -59,6 +70,7 @@ export default {
             this.$router.push('Login')
         }
         this.getHistory()
+        this.getPP()
     },
     computed: {
         cmpList() {
@@ -97,6 +109,16 @@ export default {
                 .catch(function(error) {
                     console.log('AAAAAAAAAAAAAAA', error)
                 })
+        },
+        getPP() {
+            let baseUrl
+            if (process.env.NODE_ENV == 'production') baseUrl = 'http://0r0.fr:8081'
+            if (process.env.NODE_ENV == 'development') baseUrl = 'http://localhost:8081'
+            axios.get(baseUrl + '/GetPP').then(
+                function(d) {
+                    this.pplist = d.data
+                }.bind(this)
+            )
         }
     }
 }
@@ -106,6 +128,9 @@ html,
 body,
 #app {
     height: 100vh;
+}
+.profilePic {
+    width: 75px;
 }
 .profile {
     position: relative;

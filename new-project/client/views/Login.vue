@@ -44,7 +44,7 @@ export default {
                 })
                 .then(
                     function(response) {
-                        console.log(response)
+                        console.log('ok', response)
                         this.$store.commit('LOAD_TOKEN', response['data']['Token'])
                         this.$store.commit('LOAD_PROFILE', response['data'])
                         this.$router.push('/')
