@@ -17,6 +17,12 @@
             </div>
 
         </div>
+        <div class="warOverview">
+            <svg :width="500" :height="50">
+                    <rect x="0" y="0" width="100" height="50" fill="green" class="myTerritory"/>
+                    <rect x="100" y="0" width="100" height="50" fill="red"  class="hisTerritory"/>
+            </svg>
+        </div>
         <div class="decisionBoard">
             <span class="help-box" v-if="help=='infos'">
                 <p class="closing" @click=' help = null'> X </p>{{'InfosTooltip' | getTranslationShortName }}</span>
@@ -86,6 +92,7 @@ import actions from './Actions'
 import policies from './Policies'
 import category from './Category'
 import eventLog from './EventLog'
+const d3 = require('d3');
 
 export default {
     components: {
@@ -171,6 +178,26 @@ export default {
                     return this.currentGame['ListPlayers'][player]
                 }
             }
+        }
+    },
+    watch: {
+        myBoard: {
+            handler: function(v, oldv) {
+                if(this.currentGame && this.currentGame.State == 'Running' ||this.currentGame.State == 'End' ) {
+                    d3.selectAll('.myTerritory').attr('width',function(){
+                        return v.Territory.Surface;
+                    })
+                    d3.selectAll('.hisTerritory').attr('width',function(){
+                        return this.hisBoard.Territory.Surface;
+                    }.bind(this))
+                    d3.selectAll('.hisTerritory').attr('x',function(){
+                        return v.Territory.Surface;
+                    }.bind(this))
+                    console.log('my terr', d3.select('.myTerritory'))
+                    console.log('my terr', v.Territory.Surface)
+                }
+            },
+            deept: true
         }
     },
     methods: {
@@ -342,5 +369,14 @@ export default {
 }
 .decision-panel-side {
     width: 30%;
+}
+
+.warOverview {
+    height: 10vh;
+}
+.warOverview svg{
+    height: 10vh;
+    width: 50%;
+
 }
 </style>
