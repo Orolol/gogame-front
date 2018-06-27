@@ -42,8 +42,6 @@ export default {
             return this.$store.state.myBoard
         },
         cmpPolicyValue() {
-            console.log(this.cmpBoardValues)
-            console.log(this.currentPoliciesValue)
             for (let pol in this.propsPolicies) {
                 let p = this.propsPolicies[pol]
                 if (p.PossibleValue2[0].Effects[0].ModifierType == 'Policy') {
@@ -54,7 +52,6 @@ export default {
                     this.currentPoliciesValue[p.ActionName] = this.cmpBoardValues.Modifiers[p.PossibleValue2[0].Effects[0].ModifierName]
                 }
             }
-            console.log(this.currentPoliciesValue)
             return this.currentPoliciesValue
         }
     },

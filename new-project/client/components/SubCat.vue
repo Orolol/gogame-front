@@ -33,10 +33,7 @@ export default {
         currentInfos() {
             let arr = []
             for (let r in this.$store.state.myBoard.PlayerInformations) {
-                if (
-                    this.$store.state.myBoard.PlayerInformations[r].Type == this.category &&
-                    this.$store.state.myBoard.PlayerInformations[r].SubType == this.subCategory
-                ) {
+                if (this.$store.state.myBoard.PlayerInformations[r].Type == this.category && this.$store.state.myBoard.PlayerInformations[r].SubType == this.subCategory) {
                     arr.push(this.$store.state.myBoard.PlayerInformations[r])
                 }
             }
@@ -47,15 +44,6 @@ export default {
 </script>
 
 <style>
-.actions {
-    text-align: left;
-    font-size: 14px;
-}
-
-.description {
-    font-size: 10px;
-}
-
 .slide-fade-enter-active {
     transition: all 0.3s ease;
 }

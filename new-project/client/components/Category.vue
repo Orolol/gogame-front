@@ -20,7 +20,6 @@ export default {
             rangeValues: {},
             subCategory: ''
         }
-        
     },
     props: ['subs', 'category'],
     components: {
@@ -42,15 +41,6 @@ export default {
 .sub-switch {
     justify-content: center;
     display: flex;
-}
-
-.actions {
-    text-align: left;
-    font-size: 14px;
-}
-
-.description {
-    font-size: 10px;
 }
 
 .slide-fade-enter-active {

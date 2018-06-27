@@ -1,6 +1,7 @@
 <template>
     <div class="gameLobby qpage">
         <div class="playerSmallProfile">
+            <img class="profilePic" :src="profile.ProfilePic + '.png'">
             <p>{{profile.Name}}</p>
             <p>ELO : {{profile.ELO}}</p>
             <div v-if="status == 'off' || this.currentGame.State == 'End'">
@@ -203,10 +204,13 @@ export default {
 }
 
 .playerSmallProfile {
-    position: fixed;
+    width: 20%;
+    top: 1%;
+    position: absolute;
     z-index: 99;
     text-align: center;
     border: 1px solid grey;
     border-radius: 8px;
+    left: 5px;
 }
 </style>

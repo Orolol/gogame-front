@@ -1,20 +1,21 @@
 <template>
     <div class="game-wrapper">
         <div class="gameState" v-if="myBoard">
-            <div class="turnCounter state-element">
+            <div class="turnCounter state-element" v-if="detailedDisplay">
                 Current turn : {{ this.currentGame.CurrentTurn }}
             </div>
             <div class="state-element" v-if="this.currentGame.State == 'End'">
                 Game ended
             </div>
             <div class="state-element" v-else>
-                <div v-if="this.currentGame.isWar">
+                <div v-if="this.currentGame.IsWar" class="isWar">
                     War declared
                 </div>
-                <div v-else>
+                <div v-else  class="isPeace">
                     Peace time. Get ready for war !
                 </div>
             </div>
+
 
         </div>
         <div class="warOverview">
@@ -24,21 +25,23 @@
             </svg>
         </div>
         <div class="decisionBoard">
-            <span class="help-box" v-if="help=='infos'">
-                <p class="closing" @click=' help = null'> X </p>{{'InfosTooltip' | getTranslationShortName }}</span>
+           
+            <span class="help-box" v-if="help">
+                <p class="closing" @click=' help = false'> X </p>{{currentToolTip | getTranslationDescrption }}
+            </span>
             <div class="decision-panel decision-panel-side" v-if="myBoard">
 
                 <span class="panel-title">INFOS
-                    <span class="help" @click="help=='infos'? help = null :help = 'infos'">?</span>
+                    <span class="help"  @mouseover="showToolTip('InfosTooltip')"  v-if="showHelp">?</span>
                 </span>
                 <div class="infoPanel">
-                    <div v-for="v, k in myInfos.generalInfos" v-if="v.Type != 'Separator'">
-
+                    <div v-for="v, k in myInfos.generalInfos" v-if="v.Type != 'Separator' &&( (v.Display != '1' && !detailedDisplay) || detailedDisplay)" >
+                        <span class="help-infos" @mouseover="showToolTip(v.Name)" v-if="showHelp">?</span>
                         <span class="infoPanelLabel">
                             {{v.Name | getTranslationShortName}}</span>
                         <img class='icon' :src="getIcons(v.Name)" v-if="getIcons(v.Name)" />
-                        <span class="infoValue" :class="{'lowAlert': v.LowAlert && v.Value < v.LowAlert , 'veryLowAlert': v.VeryLowAlert && v.Value < v.VeryLowAlert}">{{v.Value | number2digits}}
-                            <span v-if="v.GrowthValue" class="growthInfo"> {{v.GrowthValue | number2digits}} &uarr;</span>
+                        <span  class="infoValue" :class="{'lowAlert': v.LowAlert && v.Value < v.LowAlert , 'veryLowAlert': v.VeryLowAlert && v.Value < v.VeryLowAlert}">{{v.Value | number2digits}}
+                            <span v-if="v.GrowthValue && detailedDisplay" class="growthInfo"> {{v.GrowthValue | number2digits}} &uarr;</span>
                         </span>
 
                     </div>
@@ -65,7 +68,7 @@
             <div class="decision-panel decision-panel-side" v-if="hisBoard">
                 <span class="panel-title">ENEMY | {{hisBoard.Nick}}</span>
                 <div class="infoPanel">
-                    <div v-for="v, k in hisInfos.generalInfos" v-if="v.Type != 'Separator'">
+                    <div v-for="v, k in hisInfos.generalInfos" v-if="v.Type != 'Separator' &&( (v.Display != '1' && !detailedDisplay) || detailedDisplay)">
                         <span class="infoPanelLabel">{{v.Name | getTranslationShortName}}</span>
                         <img class='icon' :src="getIcons(v.Name)" v-if="getIcons(v.Name)" />
                         <span class="infoValue" :class="{'lowAlert': v.LowAlert && v.Value < v.LowAlert , 'veryLowAlert': v.VeryLowAlert && v.Value < v.VeryLowAlert}">{{v.Value | number2digits}}</span>
@@ -80,8 +83,14 @@
                 </div>
 
             </div>
-
+            <span class="help-box" v-if="help"> 
+                <p class="closing" @click=' help = false'> X </p>{{currentToolTip | getTranslationDescrption }}
+            </span>
             <event-log v-if="myBoard"></event-log>
+            <div class="optionBox">
+                Full display<input type="checkbox" v-model="detailedDisplay"/> <br>
+                Show help<input type="checkbox" v-model="showHelp"/>
+            </div>
         </div>
     </div>
 </template>
@@ -105,7 +114,10 @@ export default {
     data() {
         return {
             currentDecisionPanel: 'policy',
-            help: null
+            help: false,
+            detailedDisplay: false,
+            currentToolTip: '',
+            showHelp: true
         }
     },
 
@@ -201,6 +213,11 @@ export default {
         }
     },
     methods: {
+        showToolTip(name) {
+            console.log('lol')
+            this.currentToolTip = name
+            this.help = true
+        },
         getIcons(actionName) {
             let icn = null
             if (actionName == 'Money') {
@@ -240,6 +257,19 @@ export default {
 </script>
 
 <style>
+.optionBox {
+    position: absolute;
+    bottom: 5%;
+    right: 1%;
+}
+
+.isWar {
+    color: red;
+}
+.isPeace {
+    color: green;
+}
+
 .closing {
     float: right;
     padding: 5px;
@@ -255,7 +285,9 @@ export default {
     border: 1px solid grey;
     background-color: lightgrey;
     position: absolute;
-    width: 15%;
+    bottom: 5%;
+    width: 20%;
+
     padding: 7px;
     border-radius: 15px;
     box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.24), 0 17px 50px 0 rgba(0, 0, 0, 0.19);
@@ -264,6 +296,11 @@ export default {
 .infoPanelLabel {
     /* vertical-align: middle; */
     /* color: red; */
+}
+
+.help-infos {
+    font-weight: 800;
+    cursor: pointer;
 }
 
 .help {
@@ -276,7 +313,7 @@ export default {
 }
 
 .infoPanel div {
-    height: 20px;
+    height: 2.1vh;
 }
 
 .infoValue {
@@ -289,7 +326,7 @@ export default {
 }
 
 .growthInfo {
-    font-size: 0.7vw;
+    font-size: 1.1vh;
     vertical-align: top;
     color: green;
     font-weight: 600;
@@ -328,14 +365,12 @@ export default {
     text-align: left;
     position: absolute;
     left: 50px;
-    font-size: 0.8vw;
     box-shadow: 5px 0 12px #d8d8d8;
 }
 .hisBoard {
     text-align: right;
     position: absolute;
     right: 50px;
-    font-size: 0.8vw;
     box-shadow: 0 5px 12px #d8d8d8;
 }
 
@@ -345,7 +380,7 @@ export default {
     width: 100%;
     height: 100%;
     display: flex;
-    font-size: 0.9vw;
+    font-size: 1.4vh;
 }
 
 .game-wrapper {

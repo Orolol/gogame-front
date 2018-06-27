@@ -5,20 +5,20 @@
                 <button @mouseover="setHover(v.ActionName)" @mouseleave="setHover('')" class="button action-button" :disabled="!actionUsedCheck(v.ActionName) || !v.isCostOk || !v.isConstraintOk" @click="sendNewAction(v.ActionName, v.Cooldown)">
                     <span v-if="hovered != v.ActionName">{{v.Name}} <br>
                         <span class="costs" v-html="getCosts(v.Costs)"></span>
-                        <span v-if="!v.isConstraintOk">
-                            <br>
-                            <span>unlock with :</span><br>
+                        <span v-if="!v.isConstraintOk" class="constraints">
+                            <span>unlock with :</span>
                             <span v-for="c in v.Constraints"> {{c.Value | getTranslationShortName}}<br> </span>
                         </span>
                     </span>
-                    <span v-if="hovered == v.ActionName">{{v.Description}}</span>
+                    <span v-if="hovered == v.ActionName" v-html="getToolTips(v)"></span>
+                    <span v-if="!actionUsedCheck(v.ActionName)">{{ actionUsed[v.ActionName] - $store.state.currentGame.CurrentTurn}}</span>
                 </button>
 
-                <span v-if="!actionUsedCheck(v.ActionName)">{{ actionUsed[v.ActionName] - $store.state.currentGame.CurrentTurn}}</span>
+               
             </div>
 
-            <div v-if="v.Selector == 'range'">
-                <span class="description">{{v.ActionName}} {{cmpBoardValues[v.Effects[0].ModifierType][v.Effects[0].ModifierName]}} / {{maxSlider(v.Constraints[2].Value,cmpBoardValues[v.Effects[0].ModifierType][v.Effects[0].ModifierName])}}</span>
+            <div v-if="v.Selector == 'range'" class="div-slider">
+                <span class="description">{{v.ActionName | getTranslationShortName }} {{cmpBoardValues[v.Effects[0].ModifierType][v.Effects[0].ModifierName]}} / {{maxSlider(v.Constraints[2].Value,cmpBoardValues[v.Effects[0].ModifierType][v.Effects[0].ModifierName])}}</span>
                 <vue-slider ref="slider" v-model="cmpBoardValues[v.Effects[0].ModifierType][v.Effects[0].ModifierName]" :clickable="false" :disabled="!actionUsedCheck(v.ActionName)" :tooltip="'hover'" :min="parseInt(v.Constraints[0].Value)" :max="maxSlider(v.Constraints[2].Value,cmpBoardValues[v.Effects[0].ModifierType][v.Effects[0].ModifierName]) " @drag-end="sendNewAction(v.ActionName, v.Cooldown,cmpBoardValues[v.Effects[0].ModifierType][v.Effects[0].ModifierName] )"></vue-slider>
                 <br>
                 <!-- <span v-if="!actionUsedCheck(v.ActionName)">{{ actionUsed[v.ActionName] - $store.state.currentGame.CurrentTurn}}</span> -->
@@ -135,6 +135,24 @@ export default {
         }
     },
     methods: {
+        getToolTips(v) {
+            let tt = ''
+            for (let e in v.Effects) {
+                if (v.Effects[e].ActionName) {
+                    console.log(this.$store.state.translations[v.Effects[e].ActionName].ShortName)
+                    if (v.Effects[e].ToolTipValue) {
+                        tt += this.$store.state.translations[v.Effects[e].ActionName].ShortName.replace('?', v.Effects[e].ToolTipValue)
+                    } else {
+                        tt += this.$store.state.translations[v.Effects[e].ActionName].ShortName.replace('?', v.Effects[e].Value)
+                    }
+                    tt += '<br>'
+                }
+            }
+            if (!tt) {
+                return v.Description
+            }
+            return tt
+        },
         setHover(d) {
             this.hovered = d
         },
@@ -302,8 +320,30 @@ export default {
 </script>
 
 <style>
+.constraints {
+    font-size: 0.9vh;
+}
+
+.vue-slider-component {
+    border: red;
+    height: 1.1vh;
+}
+
+.vue-slider {
+    height: 0.5vh !important;
+}
+
+.vue-slider-dot {
+    /* height: 1vh !important; */
+}
+
+.div-slider {
+    height: 5vh;
+}
+
 .action-button {
-    min-height: 6vh;
+    height: 6vh;
+    font-size: 1.3vh;
     width: 65%;
 }
 
@@ -332,11 +372,11 @@ export default {
 
 .actions {
     text-align: left;
-    font-size: 14px;
+    font-size: 1.5vh;
 }
 
 .description {
-    font-size: 10px;
+    font-size: 1.1vh;
 }
 
 .slide-fade-enter-active {
