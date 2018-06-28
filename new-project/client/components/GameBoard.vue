@@ -18,10 +18,23 @@
 
 
         </div>
-        <div class="warOverview">
-            <svg :width="500" :height="50">
-                    <rect x="0" y="0" width="100" height="50" fill="green" class="myTerritory"/>
-                    <rect x="100" y="0" width="100" height="50" fill="red"  class="hisTerritory"/>
+        <div class="warOverview" v-if="myBoard">
+            <span class="myProgress"></span>
+            <span class="hisProgress"></span>
+            <svg :width="warProgress.width" :height="warProgress.height">
+                   
+                    <rect x="0" y="0" :width="myWarTerritory" :height="warProgress.height" fill="green" class="myTerritory" />
+                    
+
+                    
+                    <rect :x="myWarTerritory" y="0" :width="hisWarTerritory" :height="warProgress.height" fill="red"  class="hisTerritory"/>
+
+                    <text :x="warProgress.width - 150" :y="warProgress.height +15" class="progressText">Enemy Country</text>
+                    <text :x="myWarTerritory" :y="45" class="progressText" >{{hisBoard.PlayerInformations.TotalGroundDmg.Value | number2digits}}</text>
+                    <text :x="myWarTerritory" :y="28" class="progressText" v-if="warResult == 'TIE' || warResult == 'LOSE'" ><<<</text>
+                    <text :x="myWarTerritory - 22" :y="28" class="progressText"  v-if="warResult == 'TIE' || warResult == 'WON'" >>>></text>
+                    <text :x="myWarTerritory - 50" :y="15" class="progressText" >{{myBoard.PlayerInformations.TotalGroundDmg.Value | number2digits}}</text>
+                    <text :x="0" :y="warProgress.height +15" class="progressText" >Your Country</text>
             </svg>
         </div>
         <div class="decisionBoard">
@@ -101,7 +114,7 @@ import actions from './Actions'
 import policies from './Policies'
 import category from './Category'
 import eventLog from './EventLog'
-const d3 = require('d3');
+const d3 = require('d3')
 
 export default {
     components: {
@@ -117,7 +130,16 @@ export default {
             help: false,
             detailedDisplay: false,
             currentToolTip: '',
-            showHelp: true
+            showHelp: true,
+            warProgress: {
+                width: window.innerWidth / 2,
+                height: window.innerHeight / 20
+            },
+            lastTurn: {
+                myTerritory: 100,
+                hisTerritory: 100
+            },
+            warResult: 'TIE'
         }
     },
 
@@ -125,11 +147,15 @@ export default {
         myBoard: function() {
             for (let player in this.currentGame['ListPlayers']) {
                 if (this.currentGame['ListPlayers'][player]['PlayerID'] == this.$store.state.playerProfile.ID) {
-                    this.$store.commit('LOAD_BOARD', this.currentGame['ListPlayers'][player])
-
                     return this.currentGame['ListPlayers'][player]
                 }
             }
+        },
+        myWarTerritory() {
+            return this.myBoard.Territory.Surface * (this.warProgress.width / 2 / 100)
+        },
+        hisWarTerritory() {
+            return this.hisBoard.Territory.Surface * (this.warProgress.width / 2 / 100)
         },
         myInfos() {
             let ret = {}
@@ -195,18 +221,49 @@ export default {
     watch: {
         myBoard: {
             handler: function(v, oldv) {
-                if(this.currentGame && this.currentGame.State == 'Running' ||this.currentGame.State == 'End' ) {
-                    d3.selectAll('.myTerritory').attr('width',function(){
-                        return v.Territory.Surface;
-                    })
-                    d3.selectAll('.hisTerritory').attr('width',function(){
-                        return this.hisBoard.Territory.Surface;
-                    }.bind(this))
-                    d3.selectAll('.hisTerritory').attr('x',function(){
-                        return v.Territory.Surface;
-                    }.bind(this))
-                    console.log('my terr', d3.select('.myTerritory'))
-                    console.log('my terr', v.Territory.Surface)
+                if ((this.currentGame && this.currentGame.State == 'Running') || this.currentGame.State == 'End') {
+                    // d3.selectAll('.myTerritory').attr(
+                    //     'width',
+                    //     function() {
+                    //         return v.Territory.Surface * (this.warProgress.width / 2 / 100)
+                    //     }.bind(this)
+                    // )
+                    // d3.selectAll('.hisTerritory').attr(
+                    //     'width',
+                    //     function() {
+                    //         return this.hisBoard.Territory.Surface * (this.warProgress.width / 2 / 100)
+                    //     }.bind(this)
+                    // )
+                    // d3.selectAll('.hisTerritory').attr(
+                    //     'x',
+                    //     function() {
+                    //         return v.Territory.Surface * (this.warProgress.width / 2 / 100)
+                    //     }.bind(this)
+                    // )
+                    // d3
+                    //     .select('svg')
+                    //     .append('svg:defs')
+                    //     .append('svg:marker')
+                    //     .attr('id', 'triangle')
+                    //     .attr('refX', 15)
+                    //     .attr('refY', -1.5)
+                    //     .attr('markerWidth', 6)
+                    //     .attr('markerHeight', 6)
+                    //     .attr('orient', 'auto')
+                    //     .append('path')
+                    //     .attr('d', 'M 0 -5 10 10')
+                    //     .style('fill', 'black')
+
+                    if (v.Territory.Surface > this.lastTurn.myTerritory) {
+                        this.warResult = 'WON'
+                    } else if (v.Territory.Surface < this.lastTurn.myTerritory) {
+                        this.warResult = 'LOSE'
+                    } else {
+                        this.warResult = 'TIE'
+                    }
+
+                    this.lastTurn.myTerritory = v.Territory.Surface
+                    this.lastTurn.hisTerritory = this.hisBoard.Territory.Surface
                 }
             },
             deept: true
@@ -378,13 +435,13 @@ export default {
     top: 15px;
     position: relative;
     width: 100%;
-    height: 100%;
+    height: 75vh;
     display: flex;
     font-size: 1.4vh;
 }
 
 .game-wrapper {
-    top: 75px;
+    top: 20px;
     position: relative;
     width: 100%;
     height: 100%;
@@ -408,10 +465,16 @@ export default {
 
 .warOverview {
     height: 10vh;
-}
-.warOverview svg{
-    height: 10vh;
+    top: 5%;
+    left: 25%;
     width: 50%;
+    position: relative;
+}
+.warOverview svg {
+    height: 8vh;
+}
 
+.progressText {
+    font-size: 1vw;
 }
 </style>

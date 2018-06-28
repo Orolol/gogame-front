@@ -67,10 +67,13 @@ export default {
             return techArray
         },
         currentInfos() {
-            return this.$store.state.myBoard.Civilian
+            return this.$store.getters.myBoard.Civilian
+        },
+        myBoard() {
+            return this.$store.getters.myBoard
         },
         knownTechnology() {
-            return this.$store.state.myBoard.Technologies
+            return this.$store.getters.myBoard.Technologies
         }
     },
     methods: {
@@ -110,7 +113,7 @@ export default {
             return false
         },
         checkCosts(costs) {
-            let player = this.$store.state.myBoard
+            let player = this.myBoard
             if (player.Economy) {
                 for (let cost in costs) {
                     let c = costs[cost]
@@ -150,7 +153,7 @@ export default {
             if (!constraints) {
                 return true
             }
-            let player = this.$store.state.myBoard
+            let player = this.myBoard
             let game = this.$store.state.currentGame
             for (let c in constraints) {
                 let t = constraints[c]
@@ -193,23 +196,31 @@ export default {
         },
         sendGetTech(tech) {
             let baseUrl
-            if (process.env.NODE_ENV == 'production') baseUrl = 'http://0r0.fr:8081'
-            if (process.env.NODE_ENV == 'development') baseUrl = 'http://localhost:8081'
-            axios
-                .post(baseUrl + '/GetTechnology', {
-                    ID: tech,
-                    Value: 1,
-                    PlayerID: this.$store.state.playerProfile.ID,
-                    GameID: this.$store.state.currentGame.GameID
-                })
-                .then(
-                    function(response) {
-                        console.log(response)
-                    }.bind(this)
-                )
-                .catch(function(error) {
-                    console.log(error)
-                })
+            if (process.env.NODE_ENV == 'production') baseUrl = 'http://0r0.fr:8081/auth'
+            if (process.env.NODE_ENV == 'development') baseUrl = 'http://localhost:8081/auth'
+            this.$store.dispatch('getToken').then(
+                function(token) {
+                    axios({
+                        url: baseUrl + '/GetTechnology',
+                        method: 'POST',
+                        headers: { Authorization: 'Bearer ' + token },
+                        data: {
+                            ID: policy,
+                            Value: Number(event.target.value),
+                            PlayerID: this.$store.state.playerProfile.ID,
+                            GameID: this.$store.state.currentGame.GameID
+                        }
+                    })
+                        .then(
+                            function(response) {
+                                console.log(response)
+                            }.bind(this)
+                        )
+                        .catch(function(error) {
+                            console.log(error)
+                        })
+                }.bind(this)
+            )
         }
     }
 }

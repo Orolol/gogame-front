@@ -84,26 +84,48 @@ export default {
         goStep(n) {
             this.profile.Step = n
             let baseUrl
-            if (process.env.NODE_ENV == 'production') baseUrl = 'http://0r0.fr:8081'
-            if (process.env.NODE_ENV == 'development') baseUrl = 'http://localhost:8081'
-            axios
-                .post(baseUrl + '/EditAccount', {
-                    ...this.profile
-                })
-                .then(function(response) {
-                    console.log(response)
-                })
-                .catch(function(error) {
-                    console.log(error)
-                })
+            if (process.env.NODE_ENV == 'production') baseUrl = 'http://0r0.fr:8081/auth'
+            if (process.env.NODE_ENV == 'development') baseUrl = 'http://localhost:8081/auth'
+            this.$store.dispatch('getToken').then(
+                function(token) {
+                    axios({
+                        url: baseUrl + '/EditAccount',
+                        method: 'POST',
+                        headers: { Authorization: 'Bearer ' + token },
+                        data: {
+                            ...this.profile
+                        }
+                    })
+                        .then(
+                            function(response) {
+                                console.log(response)
+                            }.bind(this)
+                        )
+                        .catch(function(error) {
+                            console.log(error)
+                        })
+                }.bind(this)
+            )
         },
         getPP() {
             let baseUrl
             if (process.env.NODE_ENV == 'production') baseUrl = 'http://0r0.fr:8081'
             if (process.env.NODE_ENV == 'development') baseUrl = 'http://localhost:8081'
-            axios.get(baseUrl + '/GetPP').then(
-                function(d) {
-                    this.pplist = d.data
+            this.$store.dispatch('getToken').then(
+                function(token) {
+                    axios({
+                        url: baseUrl + '/GetPP',
+                        method: 'GET',
+                        headers: { Authorization: 'Bearer ' + token }
+                    })
+                        .then(
+                            function(response) {
+                                this.pplist = d.data
+                            }.bind(this)
+                        )
+                        .catch(function(error) {
+                            console.log(error)
+                        })
                 }.bind(this)
             )
         }

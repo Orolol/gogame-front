@@ -39,7 +39,7 @@ export default {
         },
 
         cmpBoardValues() {
-            return this.$store.state.myBoard
+            return this.$store.getters.myBoard
         },
         cmpPolicyValue() {
             for (let pol in this.propsPolicies) {
@@ -85,19 +85,31 @@ export default {
         },
         sendNewPolicy(policy, event) {
             let baseUrl
-            if (process.env.NODE_ENV == 'production') baseUrl = 'http://0r0.fr:8081'
-            if (process.env.NODE_ENV == 'development') baseUrl = 'http://localhost:8081'
-            axios
-                .post(baseUrl + '/ChangePolicy', {
-                    ID: policy,
-                    Value: Number(event.target.value),
-                    PlayerID: this.$store.state.playerProfile.ID,
-                    GameID: this.$store.state.currentGame.GameID
-                })
-                .then(function(response) {}.bind(this))
-                .catch(function(error) {
-                    console.log(error)
-                })
+            if (process.env.NODE_ENV == 'production') baseUrl = 'http://0r0.fr:8081/auth'
+            if (process.env.NODE_ENV == 'development') baseUrl = 'http://localhost:8081/auth'
+            this.$store.dispatch('getToken').then(
+                function(token) {
+                    axios({
+                        url: baseUrl + '/ChangePolicy',
+                        method: 'POST',
+                        headers: { Authorization: 'Bearer ' + token },
+                        data: {
+                            ID: policy,
+                            Value: Number(event.target.value),
+                            PlayerID: this.$store.state.playerProfile.ID,
+                            GameID: this.$store.state.currentGame.GameID
+                        }
+                    })
+                        .then(
+                            function(response) {
+                                Vue.set(this.actionUsed, action, cd + this.$store.state.currentGame.CurrentTurn)
+                            }.bind(this)
+                        )
+                        .catch(function(error) {
+                            console.log(error)
+                        })
+                }.bind(this)
+            )
         },
         getPolicyValue(p) {
             if (p.PossibleValue2.Effects[0].ModifierType == 'Policy') {

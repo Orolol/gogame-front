@@ -39,18 +39,21 @@ export default {
     methods: {
         getHistory() {
             let baseUrl
-            if (process.env.NODE_ENV == 'production') baseUrl = 'http://0r0.fr:8081'
-            if (process.env.NODE_ENV == 'development') baseUrl = 'http://localhost:8081'
-            axios
-                .post(baseUrl + '/GetLeaderBoard')
-                .then(
-                    function(response) {
-                        this.gameList = response.data
-                    }.bind(this)
-                )
-                .catch(function(error) {
-                    console.log('AAAAAAAAAAAAAAA', error)
-                })
+            if (process.env.NODE_ENV == 'production') baseUrl = 'http://0r0.fr:8081/auth'
+            if (process.env.NODE_ENV == 'development') baseUrl = 'http://localhost:8081/auth'
+            this.$store.dispatch('getToken').then(
+                function(token) {
+                    axios({ url: baseUrl + '/GetLeaderBoard', method: 'POST', headers: { Authorization: 'Bearer ' + token } })
+                        .then(
+                            function(response) {
+                                this.gameList = response.data
+                            }.bind(this)
+                        )
+                        .catch(function(error) {
+                            console.log('AAAAAAAAAAAAAAA', error)
+                        })
+                }.bind(this)
+            )
         }
     }
 }

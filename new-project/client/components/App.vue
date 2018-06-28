@@ -20,6 +20,7 @@ export default {
         let baseUrl
         if (process.env.NODE_ENV == 'production') baseUrl = 'http://0r0.fr:8081'
         if (process.env.NODE_ENV == 'development') baseUrl = 'http://localhost:8081'
+
         axios.get(baseUrl + '/GetTranslations/en').then(
             function(data) {
                 console.log(data)

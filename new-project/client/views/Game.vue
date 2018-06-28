@@ -46,103 +46,121 @@ export default {
         JoinGame() {
             this.status = 'pending'
             let baseUrl
-            if (process.env.NODE_ENV == 'production') baseUrl = 'http://0r0.fr:8081'
-            if (process.env.NODE_ENV == 'development') baseUrl = 'http://localhost:8081'
-            axios
-                .post(baseUrl + '/JoinGame', {
-                    ID: this.profile.ID
-                })
-                .then(
-                    function(response) {
-                        let cats = {}
-                        for (let i in response.data.policies) {
-                            let pl = response.data.policies[i]
-                            if (!cats[pl.TypePolicy]) {
-                                cats[pl.TypePolicy] = {}
-                            }
-                            if (!cats[pl.TypePolicy][pl.SubType]) {
-                                cats[pl.TypePolicy][pl.SubType] = {}
-                            }
-                            if (!cats[pl.TypePolicy][pl.SubType]['policies']) {
-                                cats[pl.TypePolicy][pl.SubType]['policies'] = []
-                            }
-                            cats[pl.TypePolicy][pl.SubType]['policies'].push(pl)
-                        }
-                        for (let i in response.data.actions) {
-                            let pl = response.data.actions[i]
-                            if (!cats[pl.Type]) {
-                                cats[pl.Type] = {}
-                            }
+            if (process.env.NODE_ENV == 'production') baseUrl = 'http://0r0.fr:8081/auth'
+            if (process.env.NODE_ENV == 'development') baseUrl = 'http://localhost:8081/auth'
 
-                            if (!cats[pl.Type][pl.SubType]) {
-                                cats[pl.Type][pl.SubType] = {}
-                            }
-                            if (!cats[pl.Type][pl.SubType]['actions']) {
-                                cats[pl.Type][pl.SubType]['actions'] = []
-                            }
-                            cats[pl.Type][pl.SubType]['actions'].push(pl)
+            this.$store.dispatch('getToken').then(
+                function(token) {
+                    axios({
+                        url: baseUrl + '/JoinGame',
+                        method: 'POST',
+                        headers: { Authorization: 'Bearer ' + token },
+                        data: {
+                            ID: this.profile.ID
                         }
-                        this.$store.commit('LOAD_BOARD_NEW', cats)
-                        this.$store.commit('LOAD_POLICIES', response.data.policies)
-                        this.$store.commit('LOAD_ACTIONS', response.data.actions)
-                        this.$store.commit('LOAD_TECH', response.data.technology)
-                        this.$store.commit('LOAD_EVENTS', response.data.events)
-                    }.bind(this)
-                )
-                .catch(function(error) {
-                    console.log(error)
-                })
+                    })
+                        .then(
+                            function(response) {
+                                let cats = {}
+                                for (let i in response.data.policies) {
+                                    let pl = response.data.policies[i]
+                                    if (!cats[pl.TypePolicy]) {
+                                        cats[pl.TypePolicy] = {}
+                                    }
+                                    if (!cats[pl.TypePolicy][pl.SubType]) {
+                                        cats[pl.TypePolicy][pl.SubType] = {}
+                                    }
+                                    if (!cats[pl.TypePolicy][pl.SubType]['policies']) {
+                                        cats[pl.TypePolicy][pl.SubType]['policies'] = []
+                                    }
+                                    cats[pl.TypePolicy][pl.SubType]['policies'].push(pl)
+                                }
+                                for (let i in response.data.actions) {
+                                    let pl = response.data.actions[i]
+                                    if (!cats[pl.Type]) {
+                                        cats[pl.Type] = {}
+                                    }
+
+                                    if (!cats[pl.Type][pl.SubType]) {
+                                        cats[pl.Type][pl.SubType] = {}
+                                    }
+                                    if (!cats[pl.Type][pl.SubType]['actions']) {
+                                        cats[pl.Type][pl.SubType]['actions'] = []
+                                    }
+                                    cats[pl.Type][pl.SubType]['actions'].push(pl)
+                                }
+                                this.$store.commit('LOAD_BOARD_NEW', cats)
+                                this.$store.commit('LOAD_POLICIES', response.data.policies)
+                                this.$store.commit('LOAD_ACTIONS', response.data.actions)
+                                this.$store.commit('LOAD_TECH', response.data.technology)
+                                this.$store.commit('LOAD_EVENTS', response.data.events)
+                            }.bind(this)
+                        )
+                        .catch(function(error) {
+                            console.log(error)
+                        })
+                }.bind(this)
+            )
+
             this.initSocket()
         },
         JoinGameAi() {
             this.status = 'pending'
             let baseUrl
-            if (process.env.NODE_ENV == 'production') baseUrl = 'http://0r0.fr:8081'
-            if (process.env.NODE_ENV == 'development') baseUrl = 'http://localhost:8081'
-            axios
-                .post(baseUrl + '/JoinGameAi', {
-                    ID: this.profile.ID
-                })
-                .then(
-                    function(response) {
-                        let cats = {}
-                        for (let i in response.data.policies) {
-                            let pl = response.data.policies[i]
-                            if (!cats[pl.TypePolicy]) {
-                                cats[pl.TypePolicy] = {}
-                            }
-                            if (!cats[pl.TypePolicy][pl.SubType]) {
-                                cats[pl.TypePolicy][pl.SubType] = {}
-                            }
-                            if (!cats[pl.TypePolicy][pl.SubType]['policies']) {
-                                cats[pl.TypePolicy][pl.SubType]['policies'] = []
-                            }
-                            cats[pl.TypePolicy][pl.SubType]['policies'].push(pl)
+            if (process.env.NODE_ENV == 'production') baseUrl = 'http://0r0.fr:8081/auth'
+            if (process.env.NODE_ENV == 'development') baseUrl = 'http://localhost:8081/auth'
+            this.$store.dispatch('getToken').then(
+                function(token) {
+                    axios({
+                        url: baseUrl + '/JoinGameAi',
+                        method: 'POST',
+                        headers: { Authorization: 'Bearer ' + token },
+                        data: {
+                            ID: this.profile.ID
                         }
-                        for (let i in response.data.actions) {
-                            let pl = response.data.actions[i]
-                            if (!cats[pl.Type]) {
-                                cats[pl.Type] = {}
-                            }
+                    })
+                        .then(
+                            function(response) {
+                                let cats = {}
+                                for (let i in response.data.policies) {
+                                    let pl = response.data.policies[i]
+                                    if (!cats[pl.TypePolicy]) {
+                                        cats[pl.TypePolicy] = {}
+                                    }
+                                    if (!cats[pl.TypePolicy][pl.SubType]) {
+                                        cats[pl.TypePolicy][pl.SubType] = {}
+                                    }
+                                    if (!cats[pl.TypePolicy][pl.SubType]['policies']) {
+                                        cats[pl.TypePolicy][pl.SubType]['policies'] = []
+                                    }
+                                    cats[pl.TypePolicy][pl.SubType]['policies'].push(pl)
+                                }
+                                for (let i in response.data.actions) {
+                                    let pl = response.data.actions[i]
+                                    if (!cats[pl.Type]) {
+                                        cats[pl.Type] = {}
+                                    }
 
-                            if (!cats[pl.Type][pl.SubType]) {
-                                cats[pl.Type][pl.SubType] = {}
-                            }
-                            if (!cats[pl.Type][pl.SubType]['actions']) {
-                                cats[pl.Type][pl.SubType]['actions'] = []
-                            }
-                            cats[pl.Type][pl.SubType]['actions'].push(pl)
-                        }
-                        this.$store.commit('LOAD_BOARD_NEW', cats)
-                        this.$store.commit('LOAD_POLICIES', response.data.policies)
-                        this.$store.commit('LOAD_ACTIONS', response.data.actions)
-                        this.$store.commit('LOAD_TECH', response.data.technology)
-                        this.$store.commit('LOAD_EVENTS', response.data.events)
-                    }.bind(this)
-                )
-                .catch(function(error) {
-                    console.log(error)
-                })
+                                    if (!cats[pl.Type][pl.SubType]) {
+                                        cats[pl.Type][pl.SubType] = {}
+                                    }
+                                    if (!cats[pl.Type][pl.SubType]['actions']) {
+                                        cats[pl.Type][pl.SubType]['actions'] = []
+                                    }
+                                    cats[pl.Type][pl.SubType]['actions'].push(pl)
+                                }
+                                this.$store.commit('LOAD_BOARD_NEW', cats)
+                                this.$store.commit('LOAD_POLICIES', response.data.policies)
+                                this.$store.commit('LOAD_ACTIONS', response.data.actions)
+                                this.$store.commit('LOAD_TECH', response.data.technology)
+                                this.$store.commit('LOAD_EVENTS', response.data.events)
+                            }.bind(this)
+                        )
+                        .catch(function(error) {
+                            console.log(error)
+                        })
+                }.bind(this)
+            )
             this.initSocket()
         },
         initSocket() {

@@ -30,11 +30,14 @@ export default {
     mounted() {},
 
     computed: {
+        myBoard() {
+            return this.$store.getters.myBoard
+        },
         currentInfos() {
             let arr = []
-            for (let r in this.$store.state.myBoard.PlayerInformations) {
-                if (this.$store.state.myBoard.PlayerInformations[r].Type == this.category && this.$store.state.myBoard.PlayerInformations[r].SubType == this.subCategory) {
-                    arr.push(this.$store.state.myBoard.PlayerInformations[r])
+            for (let r in this.myBoard.PlayerInformations) {
+                if (this.myBoard.PlayerInformations[r].Type == this.category && this.myBoard.PlayerInformations[r].SubType == this.subCategory) {
+                    arr.push(this.myBoard.PlayerInformations[r])
                 }
             }
             return arr

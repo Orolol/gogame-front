@@ -39,15 +39,26 @@ export default {
 
             axios
                 .post(baseUrl + '/Login', {
-                    login: this.login,
+                    username: this.login,
                     password: this.password
                 })
                 .then(
                     function(response) {
-                        console.log('ok', response)
-                        this.$store.commit('LOAD_TOKEN', response['data']['Token'])
-                        this.$store.commit('LOAD_PROFILE', response['data'])
-                        this.$router.push('/')
+                        console.log('ok', response.data.token)
+                        this.$store.commit('LOAD_TOKEN', response.data)
+                        axios({
+                            method: 'POST',
+                            headers: { Authorization: 'Bearer ' + response.data.token },
+                            url: baseUrl + '/auth/GetProfileInfos',
+                            data: {
+                                login: this.login
+                            }
+                        }).then(
+                            function(response) {
+                                this.$store.commit('LOAD_PROFILE', response.data)
+                                this.$router.push('/')
+                            }.bind(this)
+                        )
                     }.bind(this)
                 )
                 .catch(function(error) {

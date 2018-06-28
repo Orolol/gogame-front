@@ -66,7 +66,7 @@ export default {
             return this.$store.state.rangeValues
         },
         cmpBoardValues() {
-            return this.$store.state.myBoard
+            return this.$store.getters.myBoard
         },
 
         getMaxSlider() {
@@ -209,7 +209,7 @@ export default {
             return !this.actionUsed[id] || this.actionUsed[id] < this.$store.state.currentGame.CurrentTurn
         },
         checkCosts(costs) {
-            let player = this.$store.state.myBoard
+            let player = this.cmpBoardValues
             if (player.Economy) {
                 for (let cost in costs) {
                     let c = costs[cost]
@@ -249,7 +249,7 @@ export default {
             if (!constraints) {
                 return true
             }
-            let player = this.$store.state.myBoard
+            let player = this.cmpBoardValues
             let game = this.$store.state.currentGame
             for (let c in constraints) {
                 let t = constraints[c]
@@ -297,23 +297,32 @@ export default {
             console.log(process.env.NODE_ENV)
 
             let baseUrl
-            if (process.env.NODE_ENV == 'production') baseUrl = 'http://0r0.fr:8081'
-            if (process.env.NODE_ENV == 'development') baseUrl = 'http://localhost:8081'
-            axios
-                .post(baseUrl + '/Actions', {
-                    ID: action,
-                    Value: value,
-                    PlayerID: this.$store.state.playerProfile.ID,
-                    GameID: this.$store.state.currentGame.GameID
-                })
-                .then(
-                    function(response) {
-                        Vue.set(this.actionUsed, action, cd + this.$store.state.currentGame.CurrentTurn)
-                    }.bind(this)
-                )
-                .catch(function(error) {
-                    console.log(error)
-                })
+            if (process.env.NODE_ENV == 'production') baseUrl = 'http://0r0.fr:8081/auth'
+            if (process.env.NODE_ENV == 'development') baseUrl = 'http://localhost:8081/auth'
+
+            this.$store.dispatch('getToken').then(
+                function(token) {
+                    axios({
+                        url: baseUrl + '/Actions',
+                        method: 'POST',
+                        headers: { Authorization: 'Bearer ' + token },
+                        data: {
+                            ID: action,
+                            Value: value,
+                            PlayerID: this.$store.state.playerProfile.ID,
+                            GameID: this.$store.state.currentGame.GameID
+                        }
+                    })
+                        .then(
+                            function(response) {
+                                Vue.set(this.actionUsed, action, cd + this.$store.state.currentGame.CurrentTurn)
+                            }.bind(this)
+                        )
+                        .catch(function(error) {
+                            console.log(error)
+                        })
+                }.bind(this)
+            )
         }
     }
 }

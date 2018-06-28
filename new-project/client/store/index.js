@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import axios from 'axios'
 
 Vue.use(Vuex)
 
@@ -81,9 +82,32 @@ const mutations = {
   }
 }
 
-const actions = {}
+const actions = {
+  getToken({ commit }, data) {
+    return new Promise((resolve, reject) => {
+      let dt = new Date(state.token.expire)
+      let now = new Date()
+
+      if (dt.valueOf() < now.valueOf() + 3000) {
+        axios({ method: 'get', url: '/auth/RefreshToken', headers: { Authorization: 'Bearer ' + state.token.token } }).then(response => {})
+      }
+      resolve(state.token.token)
+    })
+  }
+}
+
+const getters = {
+  myBoard: state => {
+    if (!state.currentGame.ListPlayers) return {}
+
+    if (state.currentGame.ListPlayers[0].PlayerID == state.playerProfile.ID) return state.currentGame.ListPlayers[0]
+    else return state.currentGame.ListPlayers[1]
+  },
+  token: state => {}
+}
 
 const store = new Vuex.Store({
+  getters,
   state,
   mutations,
   actions

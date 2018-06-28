@@ -17,8 +17,11 @@ export default {
         }
     },
     computed: {
+        myBoard() {
+            return this.$store.getters.myBoard
+        },
         logs: function() {
-            return this.$store.state.myBoard.Logs
+            return this.myBoard.Logs
         }
     },
     methods: {
