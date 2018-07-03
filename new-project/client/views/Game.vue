@@ -12,6 +12,11 @@
                 Looking for an opponent
             </div>
         </div>
+        <div class="playerSmallEnemyProfile" v-if="enemyProfile">
+            <img class="profilePic" :src="enemyProfile.ProfilePic + '.png'">
+            <p>{{enemyProfile.Name}}</p>
+            <p>ELO : {{enemyProfile.ELO}}</p>
+        </div>
         <gameBoard></gameBoard>
     </div>
 </template>
@@ -35,6 +40,9 @@ export default {
         },
         profile() {
             return this.$store.state.playerProfile
+        },
+        enemyProfile() {
+            return this.$store.state.enemyProfile
         }
     },
     created() {
@@ -97,6 +105,7 @@ export default {
                             }.bind(this)
                         )
                         .catch(function(error) {
+                            this.$router.push('/Login')
                             console.log(error)
                         })
                 }.bind(this)
@@ -157,6 +166,7 @@ export default {
                             }.bind(this)
                         )
                         .catch(function(error) {
+                            this.$router.push('/Login')
                             console.log(error)
                         })
                 }.bind(this)
@@ -182,7 +192,50 @@ export default {
                     for (var i = 0; i < messages.length; i++) {
                         if (messages[i] != '"pong"') {
                             this.$store.commit('LOAD_GAME', JSON.parse(messages[i]))
+                            if (!this.$store.state.enemyProfile) {
+                                let id
+                                if (this.$store.state.currentGame.ListPlayers[0].PlayerID == this.$store.state.playerProfile.ID)
+                                    id = JSON.parse(messages[i]).ListPlayers[1].PlayerID
+                                else id = JSON.parse(messages[i]).ListPlayers[0].PlayerID
+                                if (id && id > 0) {
+                                    this.$store.dispatch('getToken').then(
+                                        function(token) {
+                                            let baseUrlTemp
+                                            if (process.env.NODE_ENV == 'production') baseUrlTemp = 'http://0r0.fr:8081/auth'
+                                            if (process.env.NODE_ENV == 'development') baseUrlTemp = 'http://localhost:8081/auth'
+                                            axios({
+                                                url: baseUrlTemp + '/GetEnemyInfos/' + id,
+                                                method: 'GET',
+                                                headers: { Authorization: 'Bearer ' + token }
+                                            }).then(
+                                                function(d) {
+                                                    this.$store.state.enemyProfile = d.data
+                                                }.bind(this)
+                                            )
+                                        }.bind(this)
+                                    )
+                                }
+                            } else {
+                            }
                             if (this.$store.state.currentGame.State == 'End') {
+                                this.$store.state.enemyProfile = null
+                                this.$store.dispatch('getToken').then(
+                                    function(token) {
+                                        let baseUrlTemp
+                                        if (process.env.NODE_ENV == 'production') baseUrlTemp = 'http://0r0.fr:8081/auth'
+                                        if (process.env.NODE_ENV == 'development') baseUrlTemp = 'http://localhost:8081/auth'
+                                        axios({
+                                            method: 'POST',
+                                            headers: { Authorization: 'Bearer ' + token },
+                                            url: baseUrlTemp + '/GetProfileInfos'
+                                        }).then(
+                                            function(response) {
+                                                console.log('GET PROFILE AGAIN OK')
+                                                this.$store.commit('LOAD_PROFILE', response.data)
+                                            }.bind(this)
+                                        )
+                                    }.bind(this)
+                                )
                                 console.log('END GAME ! ')
                                 this.conn.close()
                             }
@@ -230,5 +283,15 @@ export default {
     border: 1px solid grey;
     border-radius: 8px;
     left: 5px;
+}
+.playerSmallEnemyProfile {
+    width: 20%;
+    top: 1%;
+    position: absolute;
+    z-index: 99;
+    text-align: center;
+    border: 1px solid grey;
+    border-radius: 8px;
+    right: 5px;
 }
 </style>

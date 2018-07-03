@@ -205,7 +205,7 @@ export default {
                         method: 'POST',
                         headers: { Authorization: 'Bearer ' + token },
                         data: {
-                            ID: policy,
+                            ID: tech,
                             Value: Number(event.target.value),
                             PlayerID: this.$store.state.playerProfile.ID,
                             GameID: this.$store.state.currentGame.GameID

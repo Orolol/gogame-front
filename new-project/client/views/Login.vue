@@ -44,15 +44,11 @@ export default {
                 })
                 .then(
                     function(response) {
-                        console.log('ok', response.data.token)
                         this.$store.commit('LOAD_TOKEN', response.data)
                         axios({
                             method: 'POST',
                             headers: { Authorization: 'Bearer ' + response.data.token },
-                            url: baseUrl + '/auth/GetProfileInfos',
-                            data: {
-                                login: this.login
-                            }
+                            url: baseUrl + '/auth/GetProfileInfos'
                         }).then(
                             function(response) {
                                 this.$store.commit('LOAD_PROFILE', response.data)

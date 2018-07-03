@@ -32,16 +32,13 @@
                     <text :x="warProgress.width - 150" :y="warProgress.height +15" class="progressText">Enemy Country</text>
                     <text :x="myWarTerritory" :y="45" class="progressText" >{{hisBoard.PlayerInformations.TotalGroundDmg.Value | number2digits}}</text>
                     <text :x="myWarTerritory" :y="28" class="progressText" v-if="warResult == 'TIE' || warResult == 'LOSE'" ><<<</text>
-                    <text :x="myWarTerritory - 22" :y="28" class="progressText"  v-if="warResult == 'TIE' || warResult == 'WON'" >>>></text>
+                    <text :x="myWarTerritory - 25" :y="28" class="progressText"  v-if="warResult == 'TIE' || warResult == 'WON'" >>>></text>
                     <text :x="myWarTerritory - 50" :y="15" class="progressText" >{{myBoard.PlayerInformations.TotalGroundDmg.Value | number2digits}}</text>
                     <text :x="0" :y="warProgress.height +15" class="progressText" >Your Country</text>
             </svg>
         </div>
         <div class="decisionBoard">
            
-            <span class="help-box" v-if="help">
-                <p class="closing" @click=' help = false'> X </p>{{currentToolTip | getTranslationDescrption }}
-            </span>
             <div class="decision-panel decision-panel-side" v-if="myBoard">
 
                 <span class="panel-title">INFOS
@@ -96,8 +93,8 @@
                 </div>
 
             </div>
-            <span class="help-box" v-if="help"> 
-                <p class="closing" @click=' help = false'> X </p>{{currentToolTip | getTranslationDescrption }}
+            <span class="help-box" v-if="showHelpToolTip"> 
+                <p class="closing" @click=' showHelpToolTip = false'> X </p>{{currentToolTip | getTranslationDescrption }}
             </span>
             <event-log v-if="myBoard"></event-log>
             <div class="optionBox">
@@ -127,7 +124,7 @@ export default {
     data() {
         return {
             currentDecisionPanel: 'policy',
-            help: false,
+            showHelpToolTip: false,
             detailedDisplay: false,
             currentToolTip: '',
             showHelp: true,
@@ -271,9 +268,8 @@ export default {
     },
     methods: {
         showToolTip(name) {
-            console.log('lol')
             this.currentToolTip = name
-            this.help = true
+            this.showHelpToolTip = true
         },
         getIcons(actionName) {
             let icn = null
@@ -475,6 +471,6 @@ export default {
 }
 
 .progressText {
-    font-size: 1vw;
+    font-size: 0.9vw;
 }
 </style>

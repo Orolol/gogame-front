@@ -7,6 +7,7 @@ Vue.use(Vuex)
 const state = {
   token: '',
   playerProfile: {},
+  enemyProfile: null,
   currentGame: {},
   ecoPolicies: [],
   milPolicies: [],

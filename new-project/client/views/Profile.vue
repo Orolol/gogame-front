@@ -57,7 +57,6 @@ export default {
     components: {},
     data() {
         return {
-            profile: this.$store.state.playerProfile,
             currentGame: this.$store.state.currentGame,
             isError: false,
             gameList: [],
@@ -69,12 +68,31 @@ export default {
         if (!this.$store.state.token) {
             this.$router.push('Login')
         }
+        let baseUrl
+        if (process.env.NODE_ENV == 'production') baseUrl = 'http://0r0.fr:8081/auth'
+        if (process.env.NODE_ENV == 'development') baseUrl = 'http://localhost:8081/auth'
+        this.$store.dispatch('getToken').then(
+            function(token) {
+                axios({
+                    method: 'POST',
+                    headers: { Authorization: 'Bearer ' + token },
+                    url: baseUrl + '/GetProfileInfos'
+                }).then(
+                    function(response) {
+                        this.$store.commit('LOAD_PROFILE', response.data)
+                    }.bind(this)
+                )
+            }.bind(this)
+        )
         this.getHistory()
         this.getPP()
     },
     computed: {
         cmpList() {
             return this.gameList
+        },
+        profile() {
+            return this.$store.state.playerProfile
         }
     },
     methods: {
