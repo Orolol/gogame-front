@@ -29,7 +29,7 @@ Vue.filter('getTranslationShortName', function(actionName) {
     return actionName
   }
 })
-Vue.filter('getTranslationDescrption', function(actionName) {
+Vue.filter('getTranslationDescription', function(actionName) {
   if (store.state.translations[actionName] && store.state.translations[actionName].Description) {
     return store.state.translations[actionName].Description
   } else {

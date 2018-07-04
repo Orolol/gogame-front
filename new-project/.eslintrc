@@ -1,7 +1,36 @@
 {
-  "extends": "vue",
+  "env": {
+    "browser": true,
+    "es6": true,
+    "jquery": true
+  },
+  "globals": {
+    "moment": true,
+    "notify": true,
+    "d3": true
+  },
+  "extends": ["eslint:recommended", "idiomatic", "plugin:vue/essential", "plugin:prettier/recommended"],
   "rules": {
-    "import/no-unresolved": 0,
-    "import/no-unassigned-import": 0
+    "one-var": 0,
+    "func-names": 0,
+    "no-underscore-dangle": 0,
+    "no-console": 0,
+    "space-in-parens": [
+      "error",
+      "always",
+      {
+        "exceptions": ["empty"]
+      }
+    ],
+    "indent": ["error", 4],
+    "linebreak-style": ["error", "unix"],
+    "quotes": ["error", "single"],
+    "semi": ["error", "always"],
+    "no-var": 0,
+    "no-undef": 0,
+    "no-unused-vars": 0,
+    "no-global-assign": 0,
+    "no-inline-comments": 0,
+    "vars-on-top": 0
   }
 }

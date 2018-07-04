@@ -26,7 +26,9 @@ export default {
         VueSlider,
         subCat
     },
-    mounted() {},
+    mounted() {
+        this.subCategory = Object.keys(this.subs)[0]
+    },
 
     computed: {
         cmpRangeValues() {

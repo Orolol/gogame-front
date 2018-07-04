@@ -1,7 +1,7 @@
 <template>
     <div class="technology">
         <div class="technology-switch">
-            <button v-for="type, t in technology" class="button" @click="switchType(t)"  :class="{'button-active': currentType == t}">{{t}} </button>
+            <button v-for="type, t in technology" class="button" @click="switchType(t)" :class="{'button-active': currentType == t}">{{t}} </button>
         </div>
         <div class="technologies-sub-box">
             <!-- <div class="" v-for="c, k in currentInfos">
@@ -38,6 +38,9 @@ export default {
             currentType: 'INDUS',
             hovered: ''
         }
+    },
+    mounted() {
+        this.currentType = Object.keys(this.technology)[0]
     },
 
     computed: {

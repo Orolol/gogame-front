@@ -11,46 +11,44 @@
                 <div v-if="this.currentGame.IsWar" class="isWar">
                     War declared
                 </div>
-                <div v-else  class="isPeace">
+                <div v-else class="isPeace">
                     Peace time. Get ready for war !
                 </div>
             </div>
-
 
         </div>
         <div class="warOverview" v-if="myBoard">
             <span class="myProgress"></span>
             <span class="hisProgress"></span>
             <svg :width="warProgress.width" :height="warProgress.height">
-                   
-                    <rect x="0" y="0" :width="myWarTerritory" :height="warProgress.height" fill="green" class="myTerritory" />
-                    
 
-                    
-                    <rect :x="myWarTerritory" y="0" :width="hisWarTerritory" :height="warProgress.height" fill="red"  class="hisTerritory"/>
+                <rect x="0" y="0" :width="myWarTerritory" :height="warProgress.height" fill="green" class="myTerritory" />
 
-                    <text :x="warProgress.width - 150" :y="warProgress.height +15" class="progressText">Enemy Country</text>
-                    <text :x="myWarTerritory" :y="45" class="progressText" >{{hisBoard.PlayerInformations.TotalGroundDmg.Value | number2digits}}</text>
-                    <text :x="myWarTerritory" :y="28" class="progressText" v-if="warResult == 'TIE' || warResult == 'LOSE'" ><<<</text>
-                    <text :x="myWarTerritory - 25" :y="28" class="progressText"  v-if="warResult == 'TIE' || warResult == 'WON'" >>>></text>
-                    <text :x="myWarTerritory - 50" :y="15" class="progressText" >{{myBoard.PlayerInformations.TotalGroundDmg.Value | number2digits}}</text>
-                    <text :x="0" :y="warProgress.height +15" class="progressText" >Your Country</text>
+                <rect :x="myWarTerritory" y="0" :width="hisWarTerritory" :height="warProgress.height" fill="red" class="hisTerritory" />
+
+                <text :x="warProgress.width - 150" :y="warProgress.height +15" class="progressText">Enemy Country</text>
+                <text :x="myWarTerritory" :y="45" class="progressText">{{hisBoard.PlayerInformations.TotalGroundDmg.Value | number2digits}}</text>
+                <text :x="myWarTerritory" :y="28" class="progressText" v-if="warResult == 'TIE' || warResult == 'LOSE'">
+                    <<<</text>
+                        <text :x="myWarTerritory - 25" :y="28" class="progressText" v-if="warResult == 'TIE' || warResult == 'WON'">>>></text>
+                        <text :x="myWarTerritory - 50" :y="15" class="progressText">{{myBoard.PlayerInformations.TotalGroundDmg.Value | number2digits}}</text>
+                        <text :x="0" :y="warProgress.height +15" class="progressText">Your Country</text>
             </svg>
         </div>
         <div class="decisionBoard">
-           
+
             <div class="decision-panel decision-panel-side" v-if="myBoard">
 
                 <span class="panel-title">INFOS
-                    <span class="help"  @mouseover="showToolTip('InfosTooltip')"  v-if="showHelp">?</span>
+                    <span class="help" @mouseover="showToolTip('InfosTooltip')" v-if="showHelp">?</span>
                 </span>
                 <div class="infoPanel">
-                    <div v-for="v, k in myInfos.generalInfos" v-if="v.Type != 'Separator' &&( (v.Display != '1' && !detailedDisplay) || detailedDisplay)" >
+                    <div v-for="v, k in myInfos.generalInfos" v-if="v.Type != 'Separator' &&( (v.Display != '1' && !detailedDisplay) || detailedDisplay)">
                         <span class="help-infos" @mouseover="showToolTip(v.Name)" v-if="showHelp">?</span>
                         <span class="infoPanelLabel">
                             {{v.Name | getTranslationShortName}}</span>
                         <img class='icon' :src="getIcons(v.Name)" v-if="getIcons(v.Name)" />
-                        <span  class="infoValue" :class="{'lowAlert': v.LowAlert && v.Value < v.LowAlert , 'veryLowAlert': v.VeryLowAlert && v.Value < v.VeryLowAlert}">{{v.Value | number2digits}}
+                        <span class="infoValue" :class="{'lowAlert': v.LowAlert && v.Value < v.LowAlert , 'veryLowAlert': v.VeryLowAlert && v.Value < v.VeryLowAlert}">{{v.Value | number2digits}}
                             <span v-if="v.GrowthValue && detailedDisplay" class="growthInfo"> {{v.GrowthValue | number2digits}} &uarr;</span>
                         </span>
 
@@ -93,13 +91,12 @@
                 </div>
 
             </div>
-            <span class="help-box" v-if="showHelpToolTip"> 
-                <p class="closing" @click=' showHelpToolTip = false'> X </p>{{currentToolTip | getTranslationDescrption }}
+            <span class="help-box" v-if="showHelpToolTip">
+                <p class="closing" @click=' showHelpToolTip = false'> X </p>{{currentToolTip | getTranslationDescription }}
             </span>
             <event-log v-if="myBoard"></event-log>
             <div class="optionBox">
-                Full display<input type="checkbox" v-model="detailedDisplay"/> <br>
-                Show help<input type="checkbox" v-model="showHelp"/>
+                Full display<input type="checkbox" v-model="detailedDisplay" /> <br> Show help<input type="checkbox" v-model="showHelp" />
             </div>
         </div>
     </div>
@@ -123,7 +120,7 @@ export default {
     },
     data() {
         return {
-            currentDecisionPanel: 'policy',
+            currentDecisionPanel: 'MILITARY',
             showHelpToolTip: false,
             detailedDisplay: false,
             currentToolTip: '',

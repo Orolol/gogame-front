@@ -7,9 +7,10 @@
             <div v-if="status == 'off' || this.currentGame.State == 'End'">
                 <button class="button" @click="JoinGame">Join PVP Game</button>
                 <button class="button" @click="JoinGameAi">Join AI Game</button>
+
             </div>
             <div v-if="status == 'pending'">
-                Looking for an opponent
+                <button class="button" @click="LeaveQueue">Looking for an opponent. Click to cancel.</button>
             </div>
         </div>
         <div class="playerSmallEnemyProfile" v-if="enemyProfile">
@@ -112,6 +113,24 @@ export default {
             )
 
             this.initSocket()
+        },
+        LeaveQueue() {
+            let baseUrl
+            if (process.env.NODE_ENV == 'production') baseUrl = 'http://0r0.fr:8081/auth'
+            if (process.env.NODE_ENV == 'development') baseUrl = 'http://localhost:8081/auth'
+            this.$store.dispatch('getToken').then(
+                function(token) {
+                    axios({
+                        url: baseUrl + '/LeaveQueue',
+                        method: 'GET',
+                        headers: { Authorization: 'Bearer ' + token }
+                    }).then(
+                        function(d) {
+                            this.status = 'off'
+                        }.bind(this)
+                    )
+                }.bind(this)
+            )
         },
         JoinGameAi() {
             this.status = 'pending'

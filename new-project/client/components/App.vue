@@ -1,6 +1,6 @@
 <template>
     <div id="app">
-        <top-menu></top-menu>
+        <top-menu v-if="showMenu" ></top-menu> 
         <router-view></router-view>
     </div>
 </template>
@@ -12,8 +12,22 @@ export default {
     components: {
         topMenu
     },
+    computed: {
+        showMenu() {
+            if (this.$route.path != '/Login' && this.$route.path != '/SignUp') {
+                if (this.profile && this.profile.Step && this.profile.Step > 2) {
+                    return true
+                }
+            }
+            return false
+        },
+        profile() {
+            return this.$store.state.playerProfile
+        }
+    },
     methods: {},
     created() {
+        console.log(this.$route.path)
         if (!this.$store.state.token) {
             this.$router.push('Login')
         }
