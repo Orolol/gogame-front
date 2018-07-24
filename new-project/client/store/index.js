@@ -18,6 +18,7 @@ const state = {
   infos: {},
   events: {},
   rangeValues: {},
+  countries: {},
   translations: {}
 }
 
@@ -63,6 +64,9 @@ const mutations = {
   },
   LOAD_INFOS(state, payload) {
     state.infos = payload
+  },
+  LOAD_COUNTRIES(state, payload) {
+    state.countries = payload
   },
   LOAD_BOARD(state, payload) {
     state.myBoard = payload

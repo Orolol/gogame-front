@@ -7,6 +7,7 @@
             <div v-if="status == 'off' || this.currentGame.State == 'End'">
                 <button class="button" @click="JoinGame">Join PVP Game</button>
                 <button class="button" @click="JoinGameAi">Join AI Game</button>
+                <button class="button" @click="status = 'off'">Change Country</button>
 
             </div>
             <div v-if="status == 'pending'">
@@ -18,12 +19,15 @@
             <p>{{enemyProfile.Name}}</p>
             <p>ELO : {{enemyProfile.ELO}}</p>
         </div>
-        <gameBoard></gameBoard>
+
+        <country-selector v-if="status == 'off'"> </country-selector>
+        <gameBoard v-if="status != 'off'"></gameBoard>
     </div>
 </template>
 
 <script>
 import gameBoard from '../components/GameBoard'
+import CountrySelector from '../components/CountrySelector'
 import axios from 'axios'
 export default {
     name: 'Game',
@@ -33,7 +37,8 @@ export default {
         }
     },
     components: {
-        gameBoard
+        gameBoard,
+        CountrySelector
     },
     computed: {
         currentGame() {
@@ -144,7 +149,8 @@ export default {
                         method: 'POST',
                         headers: { Authorization: 'Bearer ' + token },
                         data: {
-                            ID: this.profile.ID
+                            ID: this.profile.ID,
+                            SelectedCountry: this.profile.SelectedCountry
                         }
                     })
                         .then(

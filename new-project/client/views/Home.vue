@@ -1,7 +1,7 @@
 <template>
     <div class="page">
 
-        <div class='homeTutorial' v-if="profile.Step < 3 && !showStep">
+        <div class='homeTutorial' v-if="profile.Step < 4 && !showStep">
             Welcome.
 
             <p> {{'HomeTutorial1'  | getTranslationShortName}} </p>

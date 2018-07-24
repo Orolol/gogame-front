@@ -1,6 +1,6 @@
 <template>
     <div id="app">
-        <top-menu v-if="showMenu" ></top-menu> 
+        <top-menu v-if="showMenu"></top-menu>
         <router-view></router-view>
     </div>
 </template>
@@ -48,6 +48,11 @@ export default {
         axios.get(baseUrl + '/GetInfos').then(
             function(data) {
                 this.$store.commit('LOAD_INFOS', data.data)
+            }.bind(this)
+        )
+        axios.get(baseUrl + '/getCountries').then(
+            function(data) {
+                this.$store.commit('LOAD_COUNTRIES', data.data)
             }.bind(this)
         )
     }

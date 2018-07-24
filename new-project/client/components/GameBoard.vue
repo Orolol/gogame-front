@@ -26,13 +26,13 @@
 
                 <rect :x="myWarTerritory" y="0" :width="hisWarTerritory" :height="warProgress.height" fill="red" class="hisTerritory" />
 
-                <text :x="warProgress.width - 150" :y="warProgress.height +15" class="progressText">Enemy Country</text>
+                <text :x="warProgress.width - 150" :y="warProgress.height +15" class="progressText">{{hisBoard.Country.Name | getTranslationShortName}}</text>
                 <text :x="myWarTerritory" :y="45" class="progressText">{{hisBoard.PlayerInformations.TotalGroundDmg.Value | number2digits}}</text>
                 <text :x="myWarTerritory" :y="28" class="progressText" v-if="warResult == 'TIE' || warResult == 'LOSE'">
-                    <<<</text>
+                    <<< </text>
                         <text :x="myWarTerritory - 25" :y="28" class="progressText" v-if="warResult == 'TIE' || warResult == 'WON'">>>></text>
                         <text :x="myWarTerritory - 50" :y="15" class="progressText">{{myBoard.PlayerInformations.TotalGroundDmg.Value | number2digits}}</text>
-                        <text :x="0" :y="warProgress.height +15" class="progressText">Your Country</text>
+                        <text :x="0" :y="warProgress.height +15" class="progressText">{{myBoard.Country.Name | getTranslationShortName}}</text>
             </svg>
         </div>
         <div class="decisionBoard">
