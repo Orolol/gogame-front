@@ -6,7 +6,7 @@
         </div>
         <div class="input-field">
             <label class="input-label ">Password</label>
-            <input type="text" v-model="password" class="input-login " @keyup.enter="loginAction" />
+            <input type="password" v-model="password" class="input-login " @keyup.enter="loginAction" />
         </div>
         <div class="login-button-box">
             <button @click="loginAction" class="button"> Login </button>

@@ -12,7 +12,7 @@
                     War declared
                 </div>
                 <div v-else class="isPeace">
-                    Peace time. Get ready for war !
+                    Peace time. Get ready for war ! ({{20 - this.currentGame.CurrentTurn}})
                 </div>
             </div>
 
@@ -279,6 +279,9 @@ export default {
             if (actionName == 'Morale') {
                 icn = 'morale.png'
             }
+            if (actionName == 'Quality') {
+                icn = 'quality.png'
+            }
             return icn
         },
         switchPanel(n) {
@@ -445,7 +448,7 @@ export default {
     border: 1px solid rgb(79, 83, 102);
     /* color: white; */
     border-radius: 15px;
-    height: 65%;
+    height: 70%;
     margin: 5px;
     /* position: relative; */
 }

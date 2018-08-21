@@ -4,6 +4,7 @@
         <div v-for="v, k in logs" v-if="v.ActionName != 'event0'">
             <span>Turn {{v.Turn}}</span> :
             <span>{{getDescription(v.ActionName)}}</span>
+            <span v-html="getToolTips(v)"></span>
         </div>
     </div>
 </template>
@@ -32,6 +33,25 @@ export default {
                     return event.Description
                 }
             }
+        },
+        getToolTips(v) {
+            let tt = ''
+            for (let e in v.Effects) {
+                if (v.Effects[e].ActionName) {
+                    if (this.$store.state.translations[v.Effects[e].ActionName]) {
+                        if (v.Effects[e].ToolTipValue) {
+                            tt += this.$store.state.translations[v.Effects[e].ActionName].ShortName.replace('?', v.Effects[e].ToolTipValue)
+                        } else {
+                            tt += this.$store.state.translations[v.Effects[e].ActionName].ShortName.replace('?', v.Effects[e].Value)
+                        }
+                        tt += '<br>'
+                    }
+                }
+            }
+            if (!tt) {
+                return ''
+            }
+            return tt
         }
     }
 }

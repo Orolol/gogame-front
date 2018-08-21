@@ -1,12 +1,15 @@
 <template>
 
     <div class="countrySelector">
-        <div v-for="c in countryList" :key="c.Name">
-            <img :src="c.Flag" />
-            <p>{{c.Name | getTranslationShortName}}</p>
-            <p>{{c.Name | getTranslationDescription}}</p>
-            <p v-html="getToolTips(c)"></p>
-            <input type="radio" :value="c.Name" v-model="profile.SelectedCountry">
+
+        <div v-for="c in countryList" :key="c.Name" class="country-box">
+            <label :for="c.Name">
+                <img :src="c.Flag" class="flag-big" />
+                <p>{{c.Name | getTranslationShortName}}</p>
+                <p>{{c.Name | getTranslationDescription}}</p>
+                <p v-html="getToolTips(c)"></p>
+            </label>
+            <input type="radio" :id="c.Name" :value="c.Name" v-model="profile.SelectedCountry">
         </div>
     </div>
 
@@ -22,6 +25,14 @@ export default {
         },
         profile() {
             return this.$store.state.playerProfile
+        },
+        SelectedCountry() {
+            return this.profile.SelectedCountry
+        }
+    },
+    watch: {
+        SelectedCountry: function(v, ov) {
+            console.log(v)
         }
     },
     methods: {
@@ -41,7 +52,7 @@ export default {
                 }
             }
             if (!tt) {
-                return v.Description
+                return ''
             }
             return tt
         }
@@ -55,6 +66,15 @@ export default {
     left: 25%;
     display: flex;
     z-index: 999;
+}
+.flag-big {
+    /* max-width: 200px; */
+    max-height: 120px;
+}
+
+.country-box {
+    width: 33%;
+    padding-right: 2%;
 }
 </style>
 
