@@ -77,14 +77,16 @@
             <button class="button" @click="goStep(4)">Understood, i'm ready !</button>
 
         </div>
+        <news v-if="profile.Step == 4"></news>
     </div>
 </template>
 
 <script>
 import axios from 'axios'
+import news from '../components/News'
 
 export default {
-    components: {},
+    components: { news },
     data() {
         return {
             profile: this.$store.state.playerProfile,

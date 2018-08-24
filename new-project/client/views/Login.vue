@@ -45,12 +45,14 @@ export default {
                 .then(
                     function(response) {
                         this.$store.commit('LOAD_TOKEN', response.data)
+                        localStorage.setItem('gogameToken', JSON.stringify(response.data))
                         axios({
                             method: 'POST',
                             headers: { Authorization: 'Bearer ' + response.data.token },
                             url: baseUrl + '/auth/GetProfileInfos'
                         }).then(
                             function(response) {
+                                localStorage.setItem('gogameProfile', JSON.stringify(response.data))
                                 this.$store.commit('LOAD_PROFILE', response.data)
                                 this.$router.push('/')
                             }.bind(this)

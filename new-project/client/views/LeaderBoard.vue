@@ -49,9 +49,14 @@ export default {
                                 this.gameList = response.data
                             }.bind(this)
                         )
-                        .catch(function(error) {
-                            console.log('AAAAAAAAAAAAAAA', error)
-                        })
+                        .catch(
+                            function(error) {
+                                this.$store.state.playerProfile = null
+                                this.$store.state.token = null
+                                localStorage.setItem('gogameToken', null)
+                                localStorage.setItem('gogameProfile', null)
+                            }.bind(this)
+                        )
                 }.bind(this)
             )
         }

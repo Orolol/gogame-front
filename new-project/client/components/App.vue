@@ -17,6 +17,10 @@ export default {
             if (this.$route.path != '/Login' && this.$route.path != '/SignUp') {
                 if (this.profile && this.profile.Step && this.profile.Step > 2) {
                     return true
+                } else if (localStorage.getItem('gogameProfile')) {
+                    console.log('GET BACK PROFILE', JSON.parse(localStorage.getItem('gogameProfile')))
+                    this.$store.state.playerProfile = JSON.parse(localStorage.getItem('gogameProfile'))
+                    return true
                 }
             }
             return false
@@ -28,8 +32,10 @@ export default {
     methods: {},
     created() {
         console.log(this.$route.path)
-        if (!this.$store.state.token) {
+        if (!this.$store.state.token && !localStorage.getItem('gogameToken')) {
             this.$router.push('Login')
+        } else if (!this.$store.state.token) {
+            this.$store.state.token = JSON.parse(localStorage.getItem('gogameToken'))
         }
         let baseUrl
         if (process.env.NODE_ENV == 'production') baseUrl = 'http://0r0.fr:8081'

@@ -45,6 +45,7 @@
     "promise-polyfill": "^6.0.2",
     "vue": "^2.2.0",
     "vue-circle-slider": "^1.0.2",
+    "vue-markdown": "^2.2.4",
     "vue-router": "^2.0.0",
     "vue-slider-component": "^2.6.1",
     "vue-tabs-component": "^1.4.0",

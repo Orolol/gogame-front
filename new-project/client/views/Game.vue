@@ -13,6 +13,10 @@
             <div v-if="status == 'pending'">
                 <button class="button" @click="LeaveQueue">Looking for an opponent. Click to cancel.</button>
             </div>
+            <div v-if="status == 'off'">
+                <p>Games ongoing: {{cmpServerInfos.OnGoingGames}}</p>
+                <p>Players in queue: {{cmpServerInfos.PlayersWaiting}}</p>
+            </div>
         </div>
         <div class="playerSmallEnemyProfile" v-if="enemyProfile">
             <img class="profilePic" :src="enemyProfile.ProfilePic + '.png'">
@@ -33,7 +37,8 @@ export default {
     name: 'Game',
     data() {
         return {
-            status: 'off'
+            status: 'off',
+            serverInfos: {}
         }
     },
     components: {
@@ -49,12 +54,33 @@ export default {
         },
         enemyProfile() {
             return this.$store.state.enemyProfile
+        },
+        cmpServerInfos() {
+            return this.serverInfos
         }
     },
     created() {
         if (!this.$store.state.token) {
             this.$router.push('Login')
         }
+        let baseUrl
+        if (process.env.NODE_ENV == 'production') baseUrl = 'http://0r0.fr:8081/'
+        if (process.env.NODE_ENV == 'development') baseUrl = 'http://localhost:8081/'
+        axios
+            .get(baseUrl + 'GetServerInfos')
+            .then(
+                function(d) {
+                    this.serverInfos = d.data
+                }.bind(this)
+            )
+            .catch(
+                function(e) {
+                    this.$store.state.playerProfile = null
+                    this.$store.state.token = null
+                    localStorage.setItem('gogameToken', null)
+                    localStorage.setItem('gogameProfile', null)
+                }.bind(this)
+            )
     },
     methods: {
         JoinGame() {
@@ -70,7 +96,8 @@ export default {
                         method: 'POST',
                         headers: { Authorization: 'Bearer ' + token },
                         data: {
-                            ID: this.profile.ID
+                            ID: this.profile.ID,
+                            SelectedCountry: this.profile.SelectedCountry
                         }
                     })
                         .then(
@@ -205,11 +232,8 @@ export default {
 
             if (window['WebSocket'] && this.$store.state.playerProfile) {
                 this.conn = new WebSocket('ws://' + baseUrl + ':5001/ws?id=' + this.$store.state.playerProfile.ID)
-                console.log('CONNECTED')
                 this.conn.onclose = function(evt) {
-                    console.log('DC')
                     this.conn = false
-                    // clearInterval(time);
                 }.bind(this)
                 this.conn.onmessage = function(evt) {
                     this.status = 'playing'
